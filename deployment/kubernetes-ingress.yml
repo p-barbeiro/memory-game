@@ -1,0 +1,38 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: dad-group-37
+spec:
+  rules:
+    - host: web-dad-group-37-172.22.21.101.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vue-app
+                port:
+                  number: 80
+    - host: api-dad-group-37-172.22.21.101.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: laravel-app
+                port:
+                  number: 80
+    - host: ws-dad-group-37-172.22.21.101.sslip.io # Separate subdomain for WebSocket
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: websocket-server
+                port:
+                  number: 8080
