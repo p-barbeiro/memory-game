@@ -1,15 +1,8 @@
 
 GROUP := "dad-group-37"
-LARAVEL_VERSION := "2.0.0"
-VUE_VERSION := "2.0.1"
-WS_VERSION := "2.0.0"
-
-kubectl-apply:
-    kubectl apply -f deployment
-
-kubectl-update:
-    kubectl delete -f deployment
-    kubectl apply -f deployment
+LARAVEL_VERSION := "2.1.0"
+VUE_VERSION := "2.1.0"
+WS_VERSION := "2.1.0"
 
 #LARAVEL
 laravel-build group=GROUP version=LARAVEL_VERSION:
@@ -52,3 +45,9 @@ tags:
 
 logs:
     kubectl logs -f $(shell kubectl get pods -o jsonpath='{.items[0].metadata.name}')
+
+apply:
+    kubectl apply -f deployment
+
+delete:
+    kubectl delete -f deployment
