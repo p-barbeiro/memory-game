@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: registry.172.22.21.107.sslip.io/dad-group-37/web:v2.0.1
+          image: registry.172.22.21.107.sslip.io/dad-group-37/web:2.1.0
 
 ---
 apiVersion: v1
