@@ -4,6 +4,7 @@ LARAVEL_VERSION := "2.1.0"
 VUE_VERSION := "2.1.0"
 WS_VERSION := "2.1.0"
 
+
 #LARAVEL
 laravel-build group=GROUP version=LARAVEL_VERSION:
     docker build -t registry.172.22.21.107.sslip.io/{{group}}/api:v{{version}} \
@@ -13,12 +14,17 @@ laravel-build group=GROUP version=LARAVEL_VERSION:
 laravel-push group=GROUP version=LARAVEL_VERSION:
     docker push registry.172.22.21.107.sslip.io/{{group}}/api:v{{version}}
 
+laravel:
+    kubectl exec -it {{`kubectl get pods -n dad-group-37 --no-headers=true -o name -l app=laravel-app | awk -F "/" '{print $2}'`}} -- /bin/bash
+
+mysql:
+    kubectl exec -it {{`kubectl get pods -n dad-group-37 --no-headers=true -o name -l app=mysql | awk -F "/" '{print $2}'`}} -- /bin/bash -c "mysql memorygame" 
+
 #VUE
 vue-build group=GROUP version=VUE_VERSION:
     docker build -t registry.172.22.21.107.sslip.io/{{group}}/web:v{{version}} -f ./deployment/DockerfileVue ./vue
 
 vue-push group=GROUP version=VUE_VERSION:
-    #replace version in ./deployment/kubernetes-vue.yaml
     docker push registry.172.22.21.107.sslip.io/{{group}}/web:v{{version}}
 
 #WS
