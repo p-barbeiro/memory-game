@@ -1,0 +1,23 @@
+meta {
+  name: Get User Transactions
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api_url}}/users/50/transactions
+  body: none
+  auth: none
+}
+
+params:query {
+  ~type: I
+  ~type: B
+  ~type: P
+  ~order_by: date_desc
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}

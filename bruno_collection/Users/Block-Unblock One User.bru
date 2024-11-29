@@ -1,0 +1,16 @@
+meta {
+  name: Block-Unblock One User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{api_url}}/users/7/lock_toggle
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+  Accept: application/json
+}

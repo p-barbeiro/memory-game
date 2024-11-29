@@ -1,0 +1,29 @@
+meta {
+  name: Create new Transaction (In-Game)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api_url}}/transactions
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "type":"I",
+    "brain_coins": -10,
+    "game_id": 1
+  }
+}
+
+body:multipart-form {
+  type: B
+  brain_coins: 1
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Get User Games
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api_url}}/users/50/games
+  body: none
+  auth: none
+}
+
+params:query {
+  ~game_type: S
+  ~date: today
+  ~date: this_week
+  ~date: this_month
+  ~board: 1
+  ~order_by: date
+  ~order_by: time
+  ~order_by: turns
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}

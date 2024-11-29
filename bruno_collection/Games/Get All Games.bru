@@ -1,13 +1,18 @@
 meta {
-  name: Get Auth User
+  name: Get All Games
   type: http
-  seq: 4
+  seq: 1
 }
 
 get {
-  url: {{api_url}}/users/me
+  url: {{api_url}}/games
   body: none
   auth: none
+}
+
+params:query {
+  ~game_type: S
+  ~page: 1
 }
 
 headers {

@@ -1,0 +1,27 @@
+meta {
+  name: Get Auth User Games
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{api_url}}/users/me/games?game_type=S&order_by=time
+  body: none
+  auth: none
+}
+
+params:query {
+  game_type: S
+  order_by: time
+  ~date: today
+  ~date: this_week
+  ~date: this_month
+  ~board: 1
+  ~order_by: date
+  ~order_by: turns
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}

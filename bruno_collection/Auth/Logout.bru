@@ -1,11 +1,11 @@
 meta {
-  name: Get Auth User
+  name: Logout
   type: http
-  seq: 4
+  seq: 3
 }
 
-get {
-  url: {{api_url}}/users/me
+post {
+  url: {{api_url}}/auth/logout
   body: none
   auth: none
 }

@@ -1,0 +1,22 @@
+meta {
+  name: Get All Scoreboard
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api_url}}/scoreboards?board=2&filter=turns
+  body: none
+  auth: none
+}
+
+params:query {
+  board: 2
+  filter: turns
+  ~filter: time
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}
