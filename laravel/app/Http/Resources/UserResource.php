@@ -19,10 +19,10 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'nickname' => $this->nickname,
             'email' => $this->email,
-            'type' => $this->type === "A" ? "Administrator" : "Player",
             'brain_coins' => $this->brain_coins_balance,
             'photoFileName' => $this->photo_filename ? '/storage/photos/' . $this->photo_filename : null,
-            'blocked' => $this->blocked === 1,
+            'type' => match ($this->type) {'A' => "Administrator",'P' => "Player",default => "unknown"},
+            'blocked' => $this->blocked,
         ];
     }
 }

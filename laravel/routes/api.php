@@ -15,33 +15,34 @@ Route::post('/auth/login', [AuthController::class, "login"]);
 Route::middleware(['auth:sanctum'])->group(function () {
 
     // Auth Routes
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']); //OK
+    Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']); //OK
 
     // Auth User Routes
-    Route::get('/users/me', [UserController::class, 'show_me']);
-    Route::get('/users/me/transactions', [TransactionController::class, 'user_transactions']);
-    Route::get('/users/me/games', [GameController::class, 'user_games']); //TAES -> history (filtrar por board,date) (order by date,time, turns)
-    Route::get('users/me/scoreboard', [GameController::class, 'user_scoreboard']); // TAES -> global_scoreboard (filtrar por time, turns, board)
+    Route::get('/users/me', [UserController::class, 'show_me']); //OK
+    Route::get('/users/me/transactions', [TransactionController::class, 'user_transactions']); // OK
+    Route::get('/users/me/games', [GameController::class, 'user_games']); // OK
+    Route::get('/users/me/scoreboard', [GameController::class, 'user_scoreboard']); // OK
 
     // User Routes
     Route::apiResource('/users', UserController::class);
-    Route::post('users/{user}/block', [UserController::class, 'block']);
-    Route::get('users/{user}/scoreboard', [GameController::class, 'scoreboard']);
+    Route::post('/users/{user}/lock_toggle', [UserController::class, 'lock_toggle']); //OK
+    Route::get('/users/{user}/scoreboard', [GameController::class, 'scoreboard']);
+    Route::get('/users/{id}/transactions', [TransactionController::class, 'show']); // OK
+    Route::get('/users/{id}/games', [GameController::class, 'show']); //OK
 
     // Transaction Routes
     Route::apiResource('/transactions', TransactionController::class)->only(['index', 'store']);
-    Route::get('/users/{id}/transactions', [TransactionController::class, 'show']);
 
     // Board Routes
     Route::apiResource('/boards', BoardController::class)->only(['index', 'store', 'destroy']);
 
     // Game Routes
-    Route::apiResource('/games', GameController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::apiResource('/games', GameController::class)->only(['index', 'store', 'destroy']);
     Route::put('/games/{game}/join', [GameController::class, 'join']);
 
     // Scoreboard Routes
-    Route::get('/scoreboards', [GameController::class, 'global_scoreboard']); // TAES -> global_scoreboard (filtrar por time, turns, board)
+    Route::get('/scoreboards', [GameController::class, 'global_scoreboard']);
 });
 
 

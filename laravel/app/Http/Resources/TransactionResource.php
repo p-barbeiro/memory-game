@@ -16,18 +16,27 @@ class TransactionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //TODO: Implement TransactionResource
+        $type = match ($this->type) {
+            'B' => 'Bonus',
+            'I' => 'In-Game',
+            'P' => 'Purchase',
+            default => 'unknown'
+        };
+
+        $transaction_date = Carbon::parse($this->transaction_datetime)->format('Y-m-d');
+        $transaction_time = Carbon::parse($this->transaction_datetime)->format('H:i');
 
         return [
             'id' => $this->id,
-            'transaction_datetime' => $this->transaction_datetime,
+            'type' => $type,
+            'date' => $transaction_date,
+            'time' => $transaction_time,
             'user_id' => $this->user_id,
-            'game_id' => $this->game_id,
-            'type' => $this->type,
-            'euros' => $this->euros,
+            'game_id' => $this->when($this->type==="I",$this->game_id),
+            'euros' => $this->when($this->type==="P",$this->euros),
             'brain_coins' => $this->brain_coins,
-            'payment_type' => $this->payment_type,
-            'payment_reference' => $this->payment_reference
+            'payment_type' => $this->when($this->type==="P",$this->payment_type),
+            'payment_reference' => $this->when($this->type==="P",$this->payment_reference),
         ];
     }
 }

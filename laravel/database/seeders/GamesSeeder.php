@@ -45,21 +45,21 @@ class GamesSeeder extends Seeder
 
         while ($d->lte($now)) {
             $i++;
-            if ( ($filteredPlayers === null) || ($nextCreatedAt === null) ||
+            if (($filteredPlayers === null) || ($nextCreatedAt === null) ||
                 ($d->gte($nextCreatedAt))) {
-                    $filteredPlayers = $allPlayers->filter(function ($value) use ($d) {
-                        return $d->gt($value->created_at);
-                    });
-                    $nextCreatedAtPlayer = $sortedPlayers->first(function ($value) use ($d) {
-                        return $d->lte($value->created_at);
-                    });
-                    $nextCreatedAt = $nextCreatedAtPlayer ? $nextCreatedAtPlayer->created_at : new \Carbon\Carbon('9999-12-31');
-                    $filteredPlayersIds = $filteredPlayers->pluck('id')->toArray();
-                }
+                $filteredPlayers = $allPlayers->filter(function ($value) use ($d) {
+                    return $d->gt($value->created_at);
+                });
+                $nextCreatedAtPlayer = $sortedPlayers->first(function ($value) use ($d) {
+                    return $d->lte($value->created_at);
+                });
+                $nextCreatedAt = $nextCreatedAtPlayer ? $nextCreatedAtPlayer->created_at : new \Carbon\Carbon('9999-12-31');
+                $filteredPlayersIds = $filteredPlayers->pluck('id')->toArray();
+            }
             $userIdForCurrentGame = $filteredPlayersIds[array_rand($filteredPlayersIds)];
-            $userIdForMultiplayer = rand(1,$this->ratioSingleplayerToMultiplayer) == 1 ? $filteredPlayersIds[array_rand($filteredPlayersIds)] : null;
+            $userIdForMultiplayer = rand(1, $this->ratioSingleplayerToMultiplayer) == 1 ? $filteredPlayersIds[array_rand($filteredPlayersIds)] : null;
             if ($userIdForMultiplayer == $userIdForCurrentGame) {
-                $userIdForMultiplayer = $filteredPlayersIds[rand(0,count($filteredPlayersIds)-1)];
+                $userIdForMultiplayer = $filteredPlayersIds[rand(0, count($filteredPlayersIds) - 1)];
                 if ($userIdForMultiplayer == $userIdForCurrentGame) {
                     $userIdForMultiplayer = null;
                 }
@@ -152,14 +152,14 @@ class GamesSeeder extends Seeder
             $this->command->info("Saved last multiplayer games played");
         }
         if (!empty($updateGamesWinner)) {
-            foreach($updateGamesWinner as $updateGameWinner) {
+            foreach ($updateGamesWinner as $updateGameWinner) {
                 DB::table('games')->where('id', $updateGameWinner['id'])->update($updateGameWinner);
             }
             $this->command->info("Saved last multiplayer games played");
         }
     }
 
-    private function getWinnerAndTotal($board, $user1, $user2, &$winnerId, &$total1, &$total2 )
+    private function getWinnerAndTotal($board, $user1, $user2, &$winnerId, &$total1, &$total2)
     {
         $totalBoardPairs = [
             1 => 6,
@@ -177,8 +177,8 @@ class GamesSeeder extends Seeder
 
     private function newGame($currentTime, $d, $userId1, $userId2)
     {
-        $board = rand(1,3);
-        $totalCentSeconds = $board * 3000 + rand(0, $board*10000);
+        $board = rand(1, 3);
+        $totalCentSeconds = $board * 3000 + rand(0, $board * 10000);
         $status = rand(1, 50) == 20 ? 'I' : 'E';
         $began_at = $d->copy()->addSeconds(rand(2, 500));
         $ended_at = null;
@@ -199,6 +199,25 @@ class GamesSeeder extends Seeder
         // Original
         //$winnerId = $status == 'E' ? ($userId2 ? (rand(1, 2) == 1 ? $userId1 : $userId2) : $userId1) : null;
 
+        //Custom is a JSON field empty for us to use if we want,
+        //i want to fill it with a random number (representing the number of turns a player has made) and put it in the JSON field
+        //if board is 1 (3x4), at least 12 turns are needed to finish the game
+        //if board is 2 (4x4), at least 16 turns are needed to finish the game
+        //if board is 3 (4x5), at least 20 turns are needed to finish the game
+        $custom = [];
+        switch ($board) {
+            case 1:
+                $custom['turns'] = rand(12, 50);
+                break;
+            case 2:
+                $custom['turns'] = rand(16, 50);
+                break;
+            case 3:
+                $custom['turns'] = rand(20, 50);
+                break;
+        }
+        $custom = json_encode($custom);
+
         // Tempoorarly, winnerId is always the second player.
         // This will alows us to use that information to fill the "multiplayer_games_played"
         // And then, at the end we can randomly change the winner.
@@ -214,6 +233,7 @@ class GamesSeeder extends Seeder
             'board_id' => $board,
             'created_at' => $d,
             'updated_at' => $status == 'E' ? $ended_at : $d,
+            'custom' => $custom
         ];
     }
 }
