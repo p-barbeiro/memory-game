@@ -16,7 +16,7 @@ const submit = async () => {
         email: email.value,
         password: password.value
     })
-    responseData.value = user.name
+    responseData.value = user.data.name
 
 }
 </script>
@@ -48,7 +48,7 @@ const submit = async () => {
                 <label for="response" class="block text-sm font-medium text-gray-700">
                     Response
                 </label>
-                <textarea :value="responseData" id="response" rows="3"
+                <textarea :value="responseData" id="response" rows="1"
                     class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     readonly></textarea>
             </div>
