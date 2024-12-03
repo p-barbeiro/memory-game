@@ -5,19 +5,20 @@ meta {
 }
 
 get {
-  url: {{api_url}}/users/me/games?game_type=S&order_by=time
+  url: {{api_url}}/users/me/games?game_type=S&qnt=50&order_by=date
   body: none
   auth: none
 }
 
 params:query {
   game_type: S
-  order_by: time
+  qnt: 50
+  order_by: date
+  ~order_by: time
   ~date: today
   ~date: this_week
   ~date: this_month
   ~board: 1
-  ~order_by: date
   ~order_by: turns
 }
 

@@ -1,6 +1,6 @@
 
 GROUP := "dad-group-37"
-LARAVEL_VERSION := "2.1.1"
+LARAVEL_VERSION := "2.1.2"
 VUE_VERSION := "2.1.1"
 WS_VERSION := "2.1.0"
 

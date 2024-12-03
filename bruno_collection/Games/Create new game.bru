@@ -1,0 +1,23 @@
+meta {
+  name: Create new game
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}/games
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "type":"S",
+    "board_id":1
+  }
+}

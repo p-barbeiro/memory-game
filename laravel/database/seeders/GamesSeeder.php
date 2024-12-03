@@ -204,19 +204,20 @@ class GamesSeeder extends Seeder
         //if board is 1 (3x4), at least 12 turns are needed to finish the game
         //if board is 2 (4x4), at least 16 turns are needed to finish the game
         //if board is 3 (4x5), at least 20 turns are needed to finish the game
-        $custom = [];
-        switch ($board) {
-            case 1:
-                $custom['turns'] = rand(12, 50);
-                break;
-            case 2:
-                $custom['turns'] = rand(16, 50);
-                break;
-            case 3:
-                $custom['turns'] = rand(20, 50);
-                break;
+        $turns = null;
+        if ($status == 'E') {
+            switch ($board) {
+                case 1:
+                    $turns = rand(12, 50);
+                    break;
+                case 2:
+                    $turns = rand(16, 50);
+                    break;
+                case 3:
+                    $turns = rand(20, 50);
+                    break;
+            }
         }
-        $custom = json_encode($custom);
 
         // Tempoorarly, winnerId is always the second player.
         // This will alows us to use that information to fill the "multiplayer_games_played"
@@ -233,7 +234,7 @@ class GamesSeeder extends Seeder
             'board_id' => $board,
             'created_at' => $d,
             'updated_at' => $status == 'E' ? $ended_at : $d,
-            'custom' => $custom
+            'total_turns_winner' => $turns
         ];
     }
 }

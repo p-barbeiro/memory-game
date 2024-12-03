@@ -40,6 +40,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Game Routes
     Route::apiResource('/games', GameController::class)->only(['index', 'store', 'destroy']);
     Route::put('/games/{game}/join', [GameController::class, 'join']);
+    Route::post('/games/{game}/interrupt', [GameController::class, 'interrupt']);
 
     // Scoreboard Routes
     Route::get('/scoreboards', [GameController::class, 'global_scoreboard']);

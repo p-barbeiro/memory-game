@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\FilterGamesRequest;
 use App\Http\Requests\ScoreboardGamesRequest;
 use App\Http\Resources\GameResource;
 use App\Models\Game;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
@@ -19,19 +21,26 @@ class GameController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //TODO: Implement
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateGameRequest $request)
     {
-        //TODO: Implement0
+        $newGame = new Game();
+
+        $newGame->fill($request->validated());
+        $newGame->fill([
+            'created_user_id' => $request->user()->id,
+            'winner_user_id' => null,
+            'status' => 'PL',
+            'began_at' => Carbon::now(),
+            'ended_at' => null,
+            'total_time' => null,
+            'total_turns_winner' => null
+        ]);
+
+        $newGame->save();
+
+        return new GameResource($newGame);
     }
 
     /**
@@ -43,6 +52,10 @@ class GameController extends Controller
 
         if ($id !== -1) {
             $gamesQuery->where('created_user_id', $id);
+        }
+        $filterGameStatus = $request->validated("game_status");
+        if ($filterGameStatus != null) {
+            $gamesQuery->where('status', $filterGameStatus);
         }
 
         $filterGameType = $request->validated("game_type");
@@ -88,7 +101,9 @@ class GameController extends Controller
             }
         }
 
-        $games = $gamesQuery->paginate(20)->withQueryString();
+        $qnt = $request->qnt ?? 20;
+
+        $games = $gamesQuery->paginate($qnt)->withQueryString();
 
         return GameResource::collection($games);
     }
@@ -166,4 +181,16 @@ class GameController extends Controller
         return $this->scoreboard($request, -1);
     }
 
+    public function interrupt(Game $game)
+    {
+        if ($game->status != 'PL') {
+            return response()->json(['error' => 'Game is not in progress'], 400);
+        }
+
+        $game->status = 'I';
+        $game->ended_at = Carbon::now();
+        $game->save();
+
+        return new GameResource($game);
+    }
 }

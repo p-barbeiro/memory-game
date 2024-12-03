@@ -2,10 +2,13 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
+import { useRouter } from 'vue-router'
 
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
+import { toast } from '@/components/ui/toast'
 
 export const useAuthStore = defineStore('auth', () => {
+  const router = useRouter()
   const storeError = useErrorStore()
 
   const user = ref(null)
@@ -46,6 +49,8 @@ export const useAuthStore = defineStore('auth', () => {
   const clearUser = () => {
     resetIntervalToRefreshToken()
     user.value = null
+    token.value = ''
+    localStorage.removeItem('token')
     axios.defaults.headers.common.Authorization = ''
   }
 
@@ -54,19 +59,20 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const responseLogin = await axios.post('auth/login', credentials)
       token.value = responseLogin.data.token
+      localStorage.setItem('token', token.value)
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       const responseUser = await axios.get('users/me')
-      user.value = responseUser.data
+      user.value = responseUser.data.data
       repeatRefreshToken()
+      router.push({ name: 'home' })
+      toast({
+        title: 'Login Successful',
+        description: 'Welcome back ' + userName.value + '!',
+      })
       return user.value
     } catch (e) {
       clearUser()
-      storeError.setErrorMessages(
-        e.response.data.message,
-        e.response.data.errors,
-        e.response.status,
-        'Authentication Error!'
-      )
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Authentication Error!')
       return false
     }
   }
@@ -79,12 +85,7 @@ export const useAuthStore = defineStore('auth', () => {
       return true
     } catch (e) {
       clearUser()
-      storeError.setErrorMessages(
-        e.response.data.message,
-        [],
-        e.response.status,
-        'Authentication Error!'
-      )
+      storeError.setErrorMessages(e.response.data.message, [], e.response.status, 'Authentication Error!')
       return false
     }
   }
@@ -107,22 +108,36 @@ export const useAuthStore = defineStore('auth', () => {
         try {
           const response = await axios.post('auth/refreshtoken')
           token.value = response.data.token
+          localStorage.setItem('token', token.value)
           axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
           return true
         } catch (e) {
           clearUser()
-          storeError.setErrorMessages(
-            e.response.data.message,
-            e.response.data.errors,
-            e.response.status,
-            'Authentication Error!'
-          )
+          storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Authentication Error!')
           return false
         }
       },
       1000 * 60 * 110
-    )
+    ) // repeat every 110 minutes
     return intervalToRefreshToken
+  }
+
+  const restoreToken = async function () {
+    let storedToken = localStorage.getItem('token')
+    if (storedToken) {
+      try {
+        token.value = storedToken
+        axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+        const responseUser = await axios.get('users/me')
+        user.value = responseUser.data.data
+        repeatRefreshToken()
+        return true
+      } catch {
+        clearUser()
+        return false
+      }
+    }
+    return false
   }
 
   return {
@@ -134,6 +149,7 @@ export const useAuthStore = defineStore('auth', () => {
     userGender,
     userPhotoUrl,
     login,
-    logout
+    logout,
+    restoreToken
   }
 })

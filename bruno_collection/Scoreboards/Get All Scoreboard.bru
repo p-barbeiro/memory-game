@@ -5,15 +5,15 @@ meta {
 }
 
 get {
-  url: {{api_url}}/scoreboards?board=2&filter=turns
+  url: {{api_url}}/scoreboards?board=1&filter=time
   body: none
   auth: none
 }
 
 params:query {
-  board: 2
-  filter: turns
-  ~filter: time
+  board: 1
+  filter: time
+  ~filter: turns
 }
 
 headers {

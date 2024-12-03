@@ -5,16 +5,16 @@ meta {
 }
 
 get {
-  url: {{api_url}}/users/me/transactions
+  url: {{api_url}}/users/me/transactions?order_by=date_desc
   body: none
   auth: none
 }
 
 params:query {
+  order_by: date_desc
   ~type: I
   ~type: B
   ~type: P
-  ~order_by: date_desc
 }
 
 headers {
