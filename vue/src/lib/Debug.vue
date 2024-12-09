@@ -18,7 +18,7 @@
 <script setup>
 import { debugMenu } from '@/lib/utils'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import Button from './button/Button.vue'
+import Button from '@/components/ui/button/Button.vue';
 
 const isVisible = ref(true)
 const selectedComponent = ref(null)
@@ -35,11 +35,6 @@ function test() {
       modalTest()
       break
   }
-}
-
-import { globalEvent } from '@/lib/utils'
-function modalTest() {
-  globalEvent.value.set('modalTest', true)
 }
 
 import { toast } from '@/components/ui/toast'

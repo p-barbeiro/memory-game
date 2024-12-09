@@ -18,13 +18,15 @@ const descriptionText = ref('')
 const cancelText = ref('Cancel')
 const actionText = ref('OK')
 const actionCallBack = ref(null)
+const cancelCallBack = ref(null)
 
-const open = (actionCallBackFunction, title = 'Title',  cancelLabel = 'Cancel', actionLabel = 'Continuar', description = '') => {
+const open = (actionCallBackFunction, title = 'Title',  cancelLabel = 'Cancel', actionLabel = 'Continuar', description = '', cancelActionCallBackFunction = null) => {
     titleText.value = title
     descriptionText.value = description
     cancelText.value = cancelLabel
     actionText.value = actionLabel 
     actionCallBack.value = actionCallBackFunction
+    cancelCallBack.value = cancelActionCallBackFunction
     isOpen.value = true;
 }
 
@@ -34,8 +36,14 @@ const handleAction = () => {
     }
 }
 
+const handleCancel = () => {
+    if (cancelCallBack.value) {
+        cancelCallBack.value()
+    }
+}
+
 defineExpose({
-    open
+    open,
 })
 </script>
 
@@ -48,7 +56,7 @@ defineExpose({
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel>{{ cancelText }}</AlertDialogCancel>
+        <AlertDialogCancel @click="handleCancel">{{ cancelText }}</AlertDialogCancel>
         <AlertDialogAction @click="handleAction">{{ actionText }}</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>

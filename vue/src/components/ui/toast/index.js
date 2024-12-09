@@ -15,7 +15,7 @@ export const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-indigo-200 border border-indigo-950 text-sm text-gray-800 rounded-lg',
+        default: 'bg-gray-200 border border-gray-300 text-sm text-gray-800 rounded-lg',
         destructive: 'bg-red-100 border border-red-200 text-sm text-red-800 rounded-lg',
         success: 'bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg',
         info: 'bg-blue-100 border border-blue-200 text-sm text-blue-800 rounded-lg',

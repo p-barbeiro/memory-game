@@ -40,6 +40,9 @@ return new class extends Migration
             // Board size (columns x rows)
             $table->integer('board_cols');
             $table->integer('board_rows');
+            $table->string('description')->nullable();
+            $table->integer('price')->nullable();
+            $table->boolean('guest_enable');
 
             // custom data
             $table->json('custom')->nullable();
@@ -144,6 +147,7 @@ return new class extends Migration
             // VISA - Visa card number (16 digits)
             $table->enum('payment_type', ['MBWAY', 'PAYPAL', 'IBAN', 'MB', 'VISA'])->nullable();
             $table->string('payment_reference')->nullable();
+            $table->string('description')->nullable();
 
             // custom data
             $table->json('custom')->nullable();

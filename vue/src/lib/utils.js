@@ -4,7 +4,7 @@ import { ref } from 'vue';
 
 export const isLoading = ref(false)
 
-export const debugMenu = true
+export const debugMenu = false
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));

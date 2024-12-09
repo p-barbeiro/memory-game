@@ -1,0 +1,16 @@
+meta {
+  name: Update One User
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{api_url}}/users/1
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+  Accept: application/json
+}

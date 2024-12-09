@@ -1,7 +1,7 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
+import axios from 'axios'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const user = ref(null)
   const token = ref('')
+  let intervalToRefreshToken = null
 
   const userName = computed(() => {
     return user.value ? user.value.name : ''
@@ -37,12 +38,28 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value ? user.value.gender : ''
   })
 
+  const userBrainCoins = computed(() => {
+    return user.value ? user.value.brain_coins : ''
+  })
+
   const userPhotoUrl = computed(() => {
     const photoFile = user.value ? (user.value.photoFileName ?? '') : ''
     if (photoFile) {
       return axios.defaults.baseURL.replaceAll('/api', photoFile)
     }
     return avatarNoneAssetURL
+  })
+
+  const isPlayer = computed(() => {
+    return user.value ? user.value.type === 'Player' : false
+  })
+
+  const userID = computed(() => {
+    return user.value ? user.value.id : ''
+  })
+
+  const userNickname = computed(() => {
+    return user.value ? user.value.nickname : ''
   })
 
   // This function is "private" - not exported by the store
@@ -64,10 +81,10 @@ export const useAuthStore = defineStore('auth', () => {
       const responseUser = await axios.get('users/me')
       user.value = responseUser.data.data
       repeatRefreshToken()
-      router.push({ name: 'home' })
       toast({
         title: 'Login Successful',
-        description: 'Welcome back ' + userName.value + '!',
+        description: 'Hello ' + userName.value + '!',
+        variant: 'info'
       })
       return user.value
     } catch (e) {
@@ -89,8 +106,6 @@ export const useAuthStore = defineStore('auth', () => {
       return false
     }
   }
-
-  let intervalToRefreshToken = null
 
   const resetIntervalToRefreshToken = () => {
     if (intervalToRefreshToken) {
@@ -140,6 +155,67 @@ export const useAuthStore = defineStore('auth', () => {
     return false
   }
 
+  const register = async (credentials) => {
+    storeError.resetMessages()
+    try {
+      axios.defaults.headers.common['Content-Type'] = 'multipart/form-data'
+      const response = await axios.post('auth/register', credentials)
+      if (response.status !== 201) {
+        throw response
+      }
+      router.push({ name: 'registerSuccess' })
+      return true
+    } catch (e) {
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Registration Failed!')
+      return false
+    }
+  }
+
+  const updateProfile = async (credentials) => {
+    storeError.resetMessages()
+    try {    
+      axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+      axios.defaults.headers.common['Content-Type'] = 'application/json'
+      const response = await axios.patch(`users/${user.value.id}`, credentials)
+      
+      if (response.status !== 200) {
+        throw response
+      }
+      user.value = response.data.data
+      toast({
+        title: 'Profile Updated',
+        description: 'Your profile has been updated successfully!',
+        variant: 'info'
+      })
+      return true
+    } catch (e) {
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Profile Update Failed!')
+      return false
+    }
+  }
+
+  const updatePhoto = async (credentials) => {
+    storeError.resetMessages()
+    try {
+      axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+      axios.defaults.headers.common['Content-Type'] = 'multipart/form-data'
+      const response = await axios.post(`users/${user.value.id}/photo`, credentials)
+      if (response.status !== 200) {
+        throw response
+      }
+      user.value = response.data.data
+      toast({
+        title: 'Profile Updated',
+        description: 'Your profile photo has been updated successfully!',
+        variant: 'info'
+      })
+      return true
+    } catch (e) {
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Profile Photo Update Failed!')
+      return false
+    }
+  }
+
   return {
     user,
     userName,
@@ -148,8 +224,16 @@ export const useAuthStore = defineStore('auth', () => {
     userType,
     userGender,
     userPhotoUrl,
+    userBrainCoins,
+    isPlayer,
+    token,
+    userNickname,
+    userID,
     login,
     logout,
-    restoreToken
+    restoreToken,
+    register,
+    updateProfile,
+    updatePhoto
   }
 })

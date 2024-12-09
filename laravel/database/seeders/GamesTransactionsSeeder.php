@@ -135,6 +135,18 @@ class GamesTransactionsSeeder extends Seeder
         }
     }
 
+    private function getRandomDescription($type, &$description): void
+    {
+        switch ($type) {
+            case 'B':
+                $description = $this->faker->randomElement(['Victory - Board 3x4', 'Victory - Board 4x4', 'Victory - Board 6x6', 'New Record']);
+                break;
+            case 'I':
+                $description = $this->faker->randomElement(['New game - Board 3x4', 'New game - Board 4x4', 'New game - Board 6x6']);
+                break;
+        }
+    }
+
     private function updateAllPlayerBalances(): void
     {
         $this->command->info("Updating all players final Balance");

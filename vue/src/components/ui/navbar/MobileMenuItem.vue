@@ -1,5 +1,5 @@
 <template>
-  <li v-if="dropdownList" class="xl:hidden flex-col cursor-pointer text-gray-600 text-base leading-3 tracking-normal py-3 hover:text-blue-900 focus:text-blue-900 focus:outline-none flex justify-center" @click="dropdownHandler($event)">
+  <li v-if="dropdownList" class="z-30 xl:hidden flex-col cursor-pointer text-gray-600 text-base leading-3 tracking-normal py-3 hover:text-blue-900 focus:text-blue-900 focus:outline-none flex justify-center" @click="dropdownHandler($event)">
     <div class="flex items-center">
       <span class="leading-6 mx-2 font-bold"> {{ name }} </span>
       <IconDropdown id="dropdown" class="-rotate-90"/>

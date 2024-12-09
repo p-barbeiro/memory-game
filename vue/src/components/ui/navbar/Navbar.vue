@@ -15,15 +15,19 @@
 
           <!-- Navigation Links -->
           <NavigationBar :menus="menuItems" />
-          <button @click="toaster">Toaster</button>
         </div>
 
         <!-- Right side -->
         <div class="h-full xl:flex hidden items-center justify-end">
           <div class="h-full flex items-center">
+            <div v-if="auth.isPlayer" class="flex flex-row gap-x-2 items-center">
+              <IconCoin />
+              <div class="font-bold">
+                {{ auth.userBrainCoins }}
+              </div>
+            </div>
             <!-- Divider -->
-            <div class="w-32 pr-16 h-full flex items-center justify-end border-r"></div>
-
+            <div class="border-r h-full mx-3"></div>
             <!-- Profile -->
             <div class="w-full h-full flex">
               <MenuProfile />
@@ -33,7 +37,12 @@
 
         <!-- Mobile Navigation -->
         <div class="visible xl:hidden flex items-center">
-          <MobileNavigationBar :menus="menuItems" />
+          <ul class="z-20 p-2 rounded-t-none border-r bg-white absolute rounded top-0 left-0 right-0 shadow mt-16 md:mt-16 hidden">
+            <MobileNavigationBar :menus="menuItems" />
+            <hr />
+            <MobileMenuProfile />
+          </ul>
+
           <IconHambuger />
         </div>
       </div>
@@ -46,53 +55,22 @@
 
 <script setup>
 import MemoryGameLogo from '@/assets/img/logo.svg'
+import { useAuthStore } from '@/stores/auth'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import IconCoin from '../../icons/IconCoin.vue'
 import IconHambuger from '../../icons/IconHambuger.vue'
 import MenuHeader from './MenuHeader.vue'
 import MenuProfile from './MenuProfile.vue'
-
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import MobileMenuProfile from './MobileMenuProfile.vue'
 import MobileNavigationBar from './MobileNavigationBar.vue'
 import NavigationBar from './NavigationBar.vue'
 
 const route = useRouter()
+const auth = useAuthStore()
+
 const currentPage = computed(() => route.currentRoute.value.meta.title)
-const menuItems = [
-  {
-    name: 'Home',
-    link: 'home'
-  },
-  {
-    name: 'Products',
-    link: 'login'
-  },
-  {
-    name: 'Scoreboards',
-    dropdownList: [
-      {
-        name: 'Cenas1',
-        link: 'home'
-      },
-      {
-        name: 'Cenas2',
-        link: 'home'
-      }
-    ]
-  },
-  {
-    name: 'Testers',
-    dropdownList: [
-      {
-        name: 'Laravel',
-        link: 'laravelTester'
-      },
-      {
-        name: 'WebSockets',
-        link: 'webSocketTester'
-      }
-    ]
-  }
-]
-
-
+const props = defineProps({
+  menuItems: { type: Array, required: true }
+})
 </script>

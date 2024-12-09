@@ -18,4 +18,11 @@ class Board extends Model
     {
         return $this->hasMany(Game::class);
     }
+
+    protected function casts(): array
+    {
+        return [
+            'guest_enable' => 'boolean',
+        ];
+    }
 }

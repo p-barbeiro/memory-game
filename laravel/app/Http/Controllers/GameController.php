@@ -121,7 +121,12 @@ class GameController extends Controller
      */
     public function update(Request $request, Game $game)
     {
-        //
+        $game->fill($request->all());
+        $game->winner_user_id = $request->user()->id;
+        $game->ended_at = Carbon::now();
+        $game->save();
+
+        return new GameResource($game);
     }
 
     /**

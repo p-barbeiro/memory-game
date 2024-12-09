@@ -1,0 +1,24 @@
+meta {
+  name: Finish
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{api_url}}/games/24260
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "total_time":20,
+    "total_turns_winner":5,
+    "status":"E"
+  }
+}
