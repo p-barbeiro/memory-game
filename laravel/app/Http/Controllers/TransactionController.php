@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateTransactionRequest;
+use App\Http\Requests\TransactionStoreRequest;
 use App\Http\Requests\FilterTransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
@@ -21,7 +21,7 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateTransactionRequest $request)
+    public function store(TransactionStoreRequest $request)
     {
         $transaction = new Transaction();
         $user = $request->user();
@@ -39,6 +39,10 @@ class TransactionController extends Controller
                 $transaction->payment_type = $request->validated("payment_type");
                 $transaction->payment_reference = $request->validated("payment_reference");
                 break;
+        }
+
+        if($request->has('description')) {
+            $transaction->custom = json_encode(['description' => $request->description]);
         }
 
         //Update brain_coins_balance
@@ -68,7 +72,14 @@ class TransactionController extends Controller
 
         $orderBy = $request->validated('order_by');
         if ($orderBy !== null) {
-            $transactionsQuery->orderBy('transaction_datetime', $orderBy === 'date_asc' ? 'asc' : 'desc');
+            switch ($orderBy) {
+                case 'date':
+                    $transactionsQuery->orderBy('transaction_datetime', 'desc');
+                    break;
+                case 'coins':
+                    $transactionsQuery->orderBy('brain_coins', 'desc');
+                    break;
+            }
         }
 
         $transactions = $transactionsQuery
@@ -84,5 +95,14 @@ class TransactionController extends Controller
     public function user_transactions(FilterTransactionRequest $request)
     {
         return $this->show($request, $request->user()->id);
+    }
+
+    public function destroy(Transaction $transaction)
+    {
+        $user = User::find($transaction->user_id);
+        $user->brain_coins_balance -= $transaction->brain_coins;
+        $user->save();
+        $transaction->delete();
+        return response()->json(['message' => 'Transaction deleted'], 200);
     }
 }

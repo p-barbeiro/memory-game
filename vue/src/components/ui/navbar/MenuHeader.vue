@@ -1,14 +1,8 @@
 <template>
-  <div class="bg-indigo-950 py-5 relative z-10 h-16">
-    <div class="container px-6 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between">
-      <div class="flex-col flex lg:flex-row items-start lg:items-center">
-        <div class="ml-0 lg:ml-0 lg:my-0">
-          <h4 class="text-2xl font-bold leading-tight text-white">
-            {{ currentPage }}
-          </h4>
-        </div>
-      </div>
-    </div>
+  <div class="bg-indigo-950 py-2 z-10 h-16 place-content-center">
+    <h4 class="container text-lg md:text-xl font-bold text-white truncate">
+      {{ currentPage }}
+    </h4>
   </div>
 </template>
 

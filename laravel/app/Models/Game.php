@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\UserResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -32,6 +33,12 @@ class Game extends Model
     public function multiplayerGamesPlayed() : HasMany
     {
         return $this->hasMany(Multiplayer::class);
+    }
+
+    public function find_opponent()
+    {
+        $opponent = $this->multiplayerGamesPlayed()->where('user_id', '!=', $this->created_user_id)->first();
+        return $opponent->user??null;
     }
 
     protected $fillable = [

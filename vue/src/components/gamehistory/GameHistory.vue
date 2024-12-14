@@ -1,103 +1,145 @@
+<script setup>
+import { useGameStore } from '@/stores/game'
+import { computed, onMounted, ref, watch } from 'vue'
+import Dropdown from '../ui/dropdown/Dropdown.vue'
+import DataTable from '../common/DataTable.vue'
+import Pagination from '../common/Pagination.vue'
+const gameStore = useGameStore()
+
+//Sort options
+const sortOptions = [
+  { value: 'id', label: 'None' },
+  { value: 'date', label: 'Date' },
+  { value: 'time', label: 'Game Time' },
+  { value: 'turns', label: 'Total Turns' }
+]
+const selectedSortOption = ref(sortOptions[0].value)
+watch(selectedSortOption, (newValue) => {
+  console.log('Sort:', newValue)
+  updateGames()
+})
+
+//Game mode filter options
+const gameModeOptions = [
+  { value: 'S', label: 'Singleplayer' },
+  { value: 'M', label: 'Multiplayer' }
+]
+const gameModeFilterOption = ref(gameModeOptions[0].value)
+watch(gameModeFilterOption, (newValue) => {
+  console.log('Gamemode:', newValue)
+  updateGames()
+  if (newValue === 'M') {
+    columns.value = [
+      { title: 'Game type', key: 'type' },
+      { title: 'Created By', key: 'create_user_id', subkey: 'nickname' },
+      { title: 'Winner', key: 'winner_user_id', subkey: 'nickname' },
+      { title: 'Opponent', key: 'opponent_user_id', subkey: 'nickname' },
+      { title: 'Start date', key: 'start_date' },
+      { title: 'Start time', key: 'start_time' },
+      { title: 'Board', key: 'board', subkey: 'name' },
+      { title: 'Status', key: 'status' },
+      { title: 'Game Time', key: 'total_time', append: 's' },
+      { title: 'Total Turns', key: 'turns' }
+    ]
+  } else {
+    columns.value = [
+      { title: 'Game type', key: 'type' },
+      { title: 'Start date', key: 'start_date' },
+      { title: 'Start time', key: 'start_time' },
+      { title: 'Board', key: 'board', subkey: 'name' },
+      { title: 'Status', key: 'status' },
+      { title: 'Game Time', key: 'total_time', append: 's' },
+      { title: 'Total Turns', key: 'turns' }
+    ]
+  }
+})
+
+//Board filter options
+const boardOptions = [
+  { value: '', label: 'All' },
+  { value: '1', label: '3x4' },
+  { value: '2', label: '4x4' },
+  { value: '3', label: '6x6' }
+]
+const boardFilterOption = ref(boardOptions[0].value)
+watch(boardFilterOption, (newValue) => {
+  console.log('Board:', newValue)
+  updateGames()
+})
+
+//Status filter options
+const statusOptions = [
+  { value: '', label: 'All' },
+  { value: 'PE', label: 'Pending' },
+  { value: 'PL', label: 'Playing' },
+  { value: 'E', label: 'Ended' },
+  { value: 'I', label: 'Interrupted' }
+]
+const statusFilterOption = ref(statusOptions[0].value)
+watch(statusFilterOption, (newValue) => {
+  console.log('Status:', newValue)
+  updateGames()
+})
+
+//Table columns
+const columns = ref([
+  { title: 'Game type', key: 'type' },
+  { title: 'Start date', key: 'start_date' },
+  { title: 'Start time', key: 'start_time' },
+  { title: 'Board', key: 'board', subkey: 'name' },
+  { title: 'Status', key: 'status' },
+  { title: 'Game Time', key: 'total_time', append: 's' },
+  { title: 'Total Turns', key: 'turns' },
+  { title: 'Game', link: true, linkText: 'Open', linkTo: '/game/:id' }
+])
+
+//Pagination
+const goToPage = ref(1)
+const currentPage = computed(() => gameStore.meta.current_page)
+const lastPage = computed(() => gameStore.meta.last_page)
+const nextPage = () => {
+  goToPage.value = currentPage.value + 1
+  updateGames()
+}
+
+const previousPage = () => {
+  goToPage.value = currentPage.value - 1
+  updateGames()
+}
+
+const changePage = (page) => {
+  goToPage.value = page
+  updateGames()
+}
+
+const updateGames = () => {
+  gameStore.fetchGames(goToPage.value, selectedSortOption.value, gameModeFilterOption.value, boardFilterOption.value, statusFilterOption.value)
+}
+
+onMounted(async () => {
+  gameStore.fetchGames(1, 'id')
+})
+</script>
+
 <template>
-  <div class="w-full p-8 h-[calc(100%-6rem)] md:rounded-xl md:shadow bg-white">
-    <div v-if="loading">
-        <IconLoading class="w-10 h-10 text-indigo-950 animate-spin" />
-    </div>
-    <div class="flex flex-col h-full justify-center">
-      <div class="flex items-center justify-between">
-        <div class="text-2xl font-bold text-gray-800 mb-3">Game History</div>
+  <div class="flex flex-col h-full w-full justify-center">
+    <h1 class="text-2xl font-semibold mb-5">Game History</h1>
+
+    <div class="flex flex-col-reverse md:flex-row justify-between">
+      <div>
+        <Pagination :currentPage="currentPage" :lastPage="lastPage" @previousPage="previousPage" @changePage="changePage" @nextPage="nextPage" />
       </div>
 
-      <div>
-        <div class="flex flex-row items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div @click="activate('all')" class="rounded-full cursor-pointer text-gray-500 px-4 py-1 hover:text-indigo-950" :class="{ 'bg-indigo-950 hover:text-white text-white': filterAll }">All</div>
-            <div @click="activate('sp')" class="rounded-full cursor-pointer text-gray-500 px-4 py-1 hover:text-indigo-950" :class="{ 'bg-indigo-950  hover:text-white text-white': filterSingleplayer }">Single-player</div>
-            <div @click="activate('mp')" class="rounded-full cursor-pointer text-gray-500 px-4 py-1 hover:text-indigo-950" :class="{ 'bg-indigo-950  hover:text-white text-white': filterMultiplayer }">Multiplayer</div>
-          </div>
-          <div class="flex items-center text-gray-600 text-sm">
-            <div class="text-gray-400 text-nowrap mr-3">Sort By:</div>
-            <Dropdown :modelValue="dropdownOption" :options="dropdownOptions" class="w-full" />
-          </div>
-        </div>
-        <div class="mt-3 overflow-x-auto">
-          <table class="w-full whitespace-nowrap">
-            <thead class="border-t border-b mb-3">
-              <th v-for="column in columns" class="text-center text-sm font-semibold text-gray-800 py-3">{{ column.title }}</th>
-            </thead>
-            <tbody>
-              <TableRow v-for="game in gameStore.games" :model="game" :columns="columns" />
-            </tbody>
-          </table>
-          <div class="mb-4">Showing page {{ currentPage }} of {{ totalPages }}</div>
-          <Pagination :totalItems="10" :itemsPerPage="10" :currentPageProp="currentPage" @update:currentPage="updatePage" />
-        </div>
+      <div class="flex flex-col md:flex-row gap-3">
+        <Dropdown text="Game status:" v-model="statusFilterOption" :options="statusOptions" />
+        <Dropdown text="Game mode:" v-model="gameModeFilterOption" :options="gameModeOptions" />
+        <Dropdown text="Board:" v-model="boardFilterOption" :options="boardOptions" />
+        <Dropdown text="Sort By:" v-model="selectedSortOption" :options="sortOptions" />
       </div>
+    </div>
+
+    <div class="mt-3 overflow-x-auto">
+      <DataTable :data="gameStore.games" :columns="columns" />
     </div>
   </div>
 </template>
-
-<script setup>
-import { useGameStore } from '@/stores/game'
-import { onMounted, ref, computed } from 'vue'
-import IconTimer from '../icons/IconTimer.vue'
-import Dropdown from '../ui/dropdown/Dropdown.vue'
-import TableRow from './TableRow.vue'
-import Pagination from './Pagination.vue'
-import IconLoading from '../icons/IconLoading.vue'
-const gameStore = useGameStore()
-
-const filterAll = ref(true)
-const filterSingleplayer = ref(false)
-const filterMultiplayer = ref(false)
-
-const currentPage = ref(1)
-const totalItems = 100
-const itemsPerPage = 10
-
-const updatePage = (page) => {
-  currentPage.value = page
-  console.log(`Current page: ${page}`)
-}
-
-const activate = (type) => {
-  filterAll.value = false
-  filterSingleplayer.value = false
-  filterMultiplayer.value = false
-  switch (type) {
-    case 'all':
-      filterAll.value = true
-      break
-    case 'sp':
-      filterSingleplayer.value = true
-      break
-    case 'mp':
-      filterMultiplayer.value = true
-      break
-  }
-}
-
-const dropdownOptions = [
-  { value: 'all', label: 'All' },
-  { value: 'done', label: 'Done' },
-  { value: 'pending', label: 'Pending' }
-]
-const dropdownOption = ref(dropdownOptions[0].value)
-
-const columns = [
-  { title: 'Game', key: 'id' },
-  { title: 'Time', key: 'total_time' },
-  { title: 'Date', key: 'start_date' },
-  { title: 'Moves', key: 'turns' },
-  { title: 'Status', key: 'status' }
-]
-
-const totalPages = computed(() => {
-  return gameStore.gamesWithPagination.meta.total
-})
-
-onMounted(async () => {
-  gameStore.fetchGames()
-  console.log('GameHistory mounted')
-})
-</script>

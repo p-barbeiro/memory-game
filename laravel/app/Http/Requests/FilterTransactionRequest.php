@@ -23,7 +23,7 @@ class FilterTransactionRequest extends FormRequest
     {
         return [
             "type" =>  "nullable|string|in:B,P,I",
-            "order_by"=>  "nullable|string|in:date_asc,date_desc",
+            "order_by"=>  "nullable|string|in:date,coins",
         ];
     }
 }

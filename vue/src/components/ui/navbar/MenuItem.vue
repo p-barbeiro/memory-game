@@ -1,7 +1,7 @@
 <template>
   <li v-if="dropdownList" ref="dropdown" class="hover:text-indigo-900 cursor-pointer h-full flex items-center text-sm text-gray-800 tracking-normal relative mx-2" @click="dropdownHandler($event)">
     <ul class="bg-white shadow rounded py-1 w-32 mt-16 -ml-4 absolute hidden top-0 rounded-t-none">
-      <div v-for="item in dropdownList">
+      <div v-for="item in dropdownList" v-show="item.visible">
         <RouterLink :to="{ name: item.link }">
           <li class="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal py-3 hover:bg-indigo-900 hover:text-white px-3 font-normal h-full w-full">
             {{ item.name }}

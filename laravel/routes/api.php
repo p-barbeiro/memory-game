@@ -22,6 +22,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Auth User Routes
     Route::get('/users/me', [UserController::class, 'show_me']); //OK
+
     Route::get('/users/me/transactions', [TransactionController::class, 'user_transactions']); // OK
     Route::get('/users/me/games', [GameController::class, 'user_games']); // OK
     Route::get('/users/me/scoreboard', [GameController::class, 'user_scoreboard']); // OK
@@ -35,18 +36,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/users/{user}/lock_toggle', [UserController::class, 'lock_toggle']); //OK
     Route::get('/users/{user}/scoreboard', [GameController::class, 'scoreboard']);
     Route::get('/users/{id}/transactions', [TransactionController::class, 'show']); // OK
-    Route::get('/users/{id}/games', [GameController::class, 'show']); //OK
+    Route::get('/users/{id}/games', [GameController::class, 'show_by_user']); //OK
 
     // Transaction Routes
-    Route::apiResource('/transactions', TransactionController::class)->only(['index', 'store']);
+    Route::apiResource('/transactions', TransactionController::class)->only(['index', 'store', 'destroy']);
 
     // Board Routes
     Route::apiResource('/boards', BoardController::class)->only(['store', 'destroy']);
     // Game Routes
-    Route::apiResource('/games', GameController::class)->only(['index', 'store', 'destroy']);
+    Route::apiResource('/games', GameController::class)->only(['index', 'store', 'destroy', 'show']);
     Route::put('/games/{game}/join', [GameController::class, 'join']);
     Route::patch('/games/{game}', [GameController::class, 'update']);
-    Route::post('/games/{game}/interrupt', [GameController::class, 'interrupt']);
+    Route::post('/games/{game}/start', [GameController::class, 'game_start']);
+    Route::post('/games/{game}/cancel', [GameController::class, 'cancel']);
 
     // Scoreboard Routes
     Route::get('/scoreboards', [GameController::class, 'global_scoreboard']);

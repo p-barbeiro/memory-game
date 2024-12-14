@@ -1,7 +1,7 @@
 import { useErrorStore } from '@/stores/error'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/toast'
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
   const storeError = useErrorStore()
+  const socket = inject('socket')
 
   const user = ref(null)
   const token = ref('')
@@ -50,8 +51,19 @@ export const useAuthStore = defineStore('auth', () => {
     return avatarNoneAssetURL
   })
 
+  const getPhotoURL = (photoFileName) => {
+    if (photoFileName) {
+      return axios.defaults.baseURL.replaceAll('/api', photoFileName)
+    }
+    return avatarNoneAssetURL
+  }
+
   const isPlayer = computed(() => {
     return user.value ? user.value.type === 'Player' : false
+  })
+
+  const isAdmin = computed(() => {
+    return user.value ? user.value.type === 'Administrator' : false
   })
 
   const userID = computed(() => {
@@ -65,6 +77,9 @@ export const useAuthStore = defineStore('auth', () => {
   // This function is "private" - not exported by the store
   const clearUser = () => {
     resetIntervalToRefreshToken()
+    if (user.value) {
+      socket.emit('logout', user.value)
+  }    
     user.value = null
     token.value = ''
     localStorage.removeItem('token')
@@ -80,10 +95,10 @@ export const useAuthStore = defineStore('auth', () => {
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       const responseUser = await axios.get('users/me')
       user.value = responseUser.data.data
+      socket.emit('login', user.value)
       repeatRefreshToken()
       toast({
         title: 'Login Successful',
-        description: 'Hello ' + userName.value + '!',
         variant: 'info'
       })
       return user.value
@@ -145,6 +160,7 @@ export const useAuthStore = defineStore('auth', () => {
         axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
         const responseUser = await axios.get('users/me')
         user.value = responseUser.data.data
+        socket.emit('login', user.value)
         repeatRefreshToken()
         return true
       } catch {
@@ -229,11 +245,13 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     userNickname,
     userID,
+    isAdmin,
     login,
     logout,
     restoreToken,
     register,
     updateProfile,
-    updatePhoto
+    updatePhoto,
+    getPhotoURL
   }
 })

@@ -12,6 +12,11 @@ import { useAuthStore } from '@/stores/auth'
 import { createRouter, createWebHistory } from 'vue-router'
 import Profile from '@/components/profile/Profile.vue'
 import GameHistory from '@/components/gamehistory/GameHistory.vue'
+import Transactions from '@/components/transactions/Transactions.vue'
+import Scoreboard from '@/components/scoreboards/Scoreboard.vue'
+import Store from '@/components/store/Store.vue'
+import Checkout from '@/components/store/Checkout.vue'
+import Lobby from '@/components/multiplayer/Lobby.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,7 +48,7 @@ const router = createRouter({
         title: 'Register'
       }
     },
-    //register success
+    //registerSuccess
     {
       path: '/register-success',
       name: 'registerSuccess',
@@ -62,13 +67,21 @@ const router = createRouter({
       }
     },
     //history
-    //profile
     {
       path: '/game-history',
       name: 'history',
       component: GameHistory,
       meta: {
         title: 'My Game History'
+      }
+    },
+    //transactions
+    {
+      path: '/transactions',
+      name: 'transactions',
+      component: Transactions,
+      meta: {
+        title: 'My Transactions'
       }
     },
     //gamemode
@@ -80,7 +93,7 @@ const router = createRouter({
         title: 'Choose your game mode!'
       }
     },
-    //board
+    //boardSelector
     {
       path: '/board-selector',
       name: 'boardSelector',
@@ -91,12 +104,49 @@ const router = createRouter({
     },
     //game
     {
-      path: '/game/:id',
+      path: '/game/:gameid?',
       name: 'game',
       component: Game,
-      props: (route) => ({ id: parseInt(route.params.id) }),
+      props: (route) => ({ gameid: parseInt(route.params.gameid) }),
       meta: {
         title: 'Flip, match, and win!'
+      }
+    },
+    //store
+    {
+      path: '/store',
+      name: 'store',
+      component: Store,
+      meta: {
+        title: 'Fuel Your Fun – Buy Coins Now!'
+      }
+    },
+        //lobby
+        {
+          path: '/lobby',
+          name: 'lobby',
+          component: Lobby,
+          meta: {
+            title: 'Prepare yourself for battle!'
+          }
+        },
+    //checkout
+    {
+      path: '/store/checkout/:amount',
+      name: 'checkout',
+      component: Checkout,
+      props: (route) => ({ amount: parseInt(route.params.amount) }),
+      meta: {
+        title: 'Checkout'
+      }
+    },
+    //scoreboard
+    {
+      path: '/scoreboard',
+      name: 'scoreboard',
+      component: Scoreboard,
+      meta: {
+        title: 'Scoreboard'
       }
     },
     //testers
@@ -133,24 +183,21 @@ router.beforeEach(async (to, from, next) => {
     handlingFirstRoute = false
     await storeAuth.restoreToken()
   }
-
+ 
+  //authenticated users can't acess this pages
   const authPagesDisable = ['login', 'register', 'registerSuccess']
   if (authPagesDisable.includes(to.name) && storeAuth.user) {
     next({ name: 'home' })
     return
   }
 
-  const guestPagesDisable = ['profile']
+  //guest users can't acess this pages
+  const guestPagesDisable = ['profile', 'history', 'history', 'transactions', 'store']
   if (guestPagesDisable.includes(to.name) && !storeAuth.user) {
     next({ name: 'home' })
     return
   }
-  // // routes "updateTask" and "updateProject" are only accessible when user is logged in
-  // if (((to.name == 'updateTask') || (to.name == 'updateProject')) && (!storeAuth.user)) {
-  //     next({ name: 'login' })
-  //     return
-  // }
-  // all other routes are accessible to everyone, including anonymous users
+
   next()
   isLoading.value = false
 })

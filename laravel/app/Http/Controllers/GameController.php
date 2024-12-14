@@ -31,8 +31,8 @@ class GameController extends Controller
         $newGame->fill([
             'created_user_id' => $request->user()->id,
             'winner_user_id' => null,
-            'status' => 'PL',
-            'began_at' => Carbon::now(),
+            'status' => 'PE',
+            'began_at' => null,
             'ended_at' => null,
             'total_time' => null,
             'total_turns_winner' => null
@@ -46,41 +46,32 @@ class GameController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(FilterGamesRequest $request, int $id)
+    public function show_by_user(FilterGamesRequest $request, int $id)
     {
         $gamesQuery = Game::query();
 
-        if ($id !== -1) {
-            $gamesQuery->where('created_user_id', $id);
+        $filterGameType = $request->validated("game_type");
+        if ($filterGameType != null) {
+            $gamesQuery->where('type', $filterGameType);
+
         }
+
         $filterGameStatus = $request->validated("game_status");
         if ($filterGameStatus != null) {
             $gamesQuery->where('status', $filterGameStatus);
         }
 
-        $filterGameType = $request->validated("game_type");
-        if ($filterGameType != null) {
-            $gamesQuery->where('type', $filterGameType);
-        }
-
-        $filterDate = $request->validated("date");
-        if ($filterDate != null) {
-            switch ($filterDate) {
-                case "today":
-                    $gamesQuery->whereDate('created_at', now());
-                    break;
-                case "this_week":
-                    $gamesQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                    break;
-                case "this_month":
-                    $gamesQuery->whereMonth('created_at', now()->month);
-                    break;
-            }
-        }
-
         $filterBoard = $request->validated("board");
         if ($filterBoard != null) {
             $gamesQuery->where('board_id', $filterBoard);
+        }
+
+        if ($id !== -1) {
+            //get games created by user and games that exist in multiplayer table with the user
+            $gamesQuery->where('created_user_id', $id)
+                ->orWhereHas('multiplayerGamesPlayed', function ($query) use ($id) {
+                    $query->where('user_id', $id);
+                });
         }
 
         $orderBy = $request->validated("order_by");
@@ -91,12 +82,14 @@ class GameController extends Controller
                     break;
                 case "time":
                     //ignore games with total_time = null
-                    $gamesQuery->whereNotNull('total_time');
                     $gamesQuery->orderBy('total_time');
                     break;
                 case "turns":
                     //turns is a JSON field inside custom column
-                    $gamesQuery->orderBy('custom->turns');
+                    $gamesQuery->orderBy('total_turns_winner');
+                    break;
+                case "id":
+                    $gamesQuery->orderBy('id', 'desc');
                     break;
             }
         }
@@ -106,6 +99,12 @@ class GameController extends Controller
         $games = $gamesQuery->paginate($qnt)->withQueryString();
 
         return GameResource::collection($games);
+    }
+
+
+    public function show(Game $game)
+    {
+        return new GameResource($game);
     }
 
     /**
@@ -124,6 +123,15 @@ class GameController extends Controller
         $game->fill($request->all());
         $game->winner_user_id = $request->user()->id;
         $game->ended_at = Carbon::now();
+        $game->save();
+
+        return new GameResource($game);
+    }
+
+    public function game_start(Game $game)
+    {
+        $game->began_at = Carbon::now();
+        $game->status = 'PL';
         $game->save();
 
         return new GameResource($game);
@@ -157,7 +165,7 @@ class GameController extends Controller
         $filterGameType = $request->validated("game_type");
         if ($filterGameType != null) {
             $scoreboard->where('type', $filterGameType);
-        }else{
+        } else {
             $scoreboard->where('type', 'S');
         }
 
@@ -186,12 +194,8 @@ class GameController extends Controller
         return $this->scoreboard($request, -1);
     }
 
-    public function interrupt(Game $game)
+    public function cancel(Game $game)
     {
-        if ($game->status != 'PL') {
-            return response()->json(['error' => 'Game is not in progress'], 400);
-        }
-
         $game->status = 'I';
         $game->ended_at = Carbon::now();
         $game->save();

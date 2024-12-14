@@ -14,14 +14,12 @@ const storeAuth = useAuthStore()
 </script>
 
 <template>
-  <div class="w-full md:pl-0 md:py-0 h-[calc(100%-6rem)] md:rounded-xl md:shadow bg-white">
-    <div class="flex flex-col justify-center items-center w-full h-full">
+    <div class="place-self-center flex flex-col justify-center items-center w-full h-full">
       <h2 class="text-2xl text-center">Account successfully created!</h2>
       <img class="w-1/3" src="/src/assets/img/register_success.jpg" alt="Register Sucess" />
-      <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-5 text-center">
         Your journey to becoming a memory master starts now - Have fun!
         <Button @click="router.push({ name: 'gamemode' })">Play</Button>
       </div>
     </div>
-  </div>
 </template>

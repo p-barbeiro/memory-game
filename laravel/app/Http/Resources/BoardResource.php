@@ -21,6 +21,7 @@ class BoardResource extends JsonResource
             'description' => $this->description ?? "Board description not available",
             'price' => $this->price ?? 0,
             'guest_enable' => $this->guest_enable,
+            'name' => $this->board_cols . "x" . $this->board_rows,
         ];
     }
 }

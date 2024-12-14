@@ -1,63 +1,61 @@
 <template>
-  <div class="w-full p-8 h-[calc(100%-6rem)] md:rounded-xl md:shadow bg-white">
-    <div class="flex flex-col justify-between h-full w-full">
-      <CardFooter class="flex justify-between">
-        <CardTitle>Profile Information</CardTitle>
-        <div class="flex flex-row gap-3">
-          <Button variant="destructive" @click="removeAcount"> Remove </Button>
-          <Button @click="toogleEdit"> {{ editText }} </Button>
-        </div>
-      </CardFooter>
-      <div class="w-full h-full flex flex-col lg:flex-row">
-        <div class="p-6 lg:w-1/3 h-full flex flex-col items-center justify-center">
-          <div v-if="!viewMode" class="flex flex-col justify-between space-y-1.5 mb-5 w-full">
-            <Label for="photo_filename">Update photo</Label>
-            <div class="flex flex-row items-center gap-2">
-              <div class="relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                <IconPhoto />
-                <input type="file" id="photo_filename" name="photo_filename" accept="image/*" @change="onFileChange" class="hidden w-full h-full cursor-pointer" />
-                <label for="photo_filename" class="flex items-center justify-center w-full h-full cursor-pointer">
-                  <span v-if="credentials.photo_filename" class="truncate">{{ credentials.photo_filename.name }}</span>
-                  <span v-else>Choose a file...</span>
-                </label>
+  <div class="flex flex-col justify-between h-full w-full">
+    <CardFooter class="flex justify-between px-0">
+      <CardTitle>Profile Information</CardTitle>
+      <div class="flex flex-row gap-3">
+        <Button v-if="auth.isPlayer" variant="destructive" @click="removeAcount"> Remove </Button>
+        <Button @click="toogleEdit"> {{ editText }} </Button>
+      </div>
+    </CardFooter>
+    <div class="w-full h-full flex flex-col lg:flex-row">
+      <div class="lg:w-2/3 h-full flex flex-col justify-center">
+        <CardContent class="px-0">
+          <form>
+            <div class="grid items-center w-full gap-4">
+              <div class="flex flex-col space-y-1.5">
+                <Label for="email">Email</Label>
+                <Input :disabled="viewMode" id="email" type="email" placeholder="User Email" v-model="credentials.email" />
+                <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage>
               </div>
-              <ErrorMessage :errorMessage="storeError.fieldMessage('photo_filename')"></ErrorMessage>
-              <Button v-if="credentials.photo_filename" @click="updatePhoto" class="w-1/3">Save</Button>
+
+              <div class="flex flex-col space-y-1.5">
+                <Label for="password">Password</Label>
+                <Input :disabled="viewMode" id="password" type="password" v-model="credentials.password" />
+                <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage>
+              </div>
+
+              <div class="flex flex-col space-y-1.5">
+                <Label for="name">Name</Label>
+                <Input :disabled="viewMode" id="name" type="text" v-model="credentials.name" />
+                <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage>
+              </div>
+
+              <div class="flex flex-col space-y-1.5">
+                <Label for="nickname">Nickname</Label>
+                <Input :disabled="viewMode" id="nickname" type="text" v-model="credentials.nickname" />
+                <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage>
+              </div>
             </div>
+          </form>
+          <Button v-if="!viewMode" @click="updateProfile" class="w-full mt-5">Update Profile</Button>
+        </CardContent>
+      </div>
+      <div class="lg:w-1/3 h-full flex flex-col items-center justify-center md:p-5">
+        <img class="w-full sm:w-1/3 lg:w-full object-cover rounded-xl border shadow" :src="auth.userPhotoUrl" alt="Profile Picture" />
+        <div v-if="!viewMode" class="flex flex-col justify-between space-y-1.5 mt-5 w-full">
+          <Label for="photo_filename">Update photo</Label>
+          <div class="flex flex-row items-center gap-2">
+            <div class="relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <IconPhoto />
+              <input type="file" id="photo_filename" name="photo_filename" accept="image/*" @change="onFileChange" class="hidden w-full h-full cursor-pointer" />
+              <label for="photo_filename" class="flex items-center justify-center w-full h-full cursor-pointer">
+                <span v-if="credentials.photo_filename" class="truncate">{{ credentials.photo_filename.name }}</span>
+                <span v-else>Choose a file...</span>
+              </label>
+            </div>
+            <ErrorMessage :errorMessage="storeError.fieldMessage('photo_filename')"></ErrorMessage>
+            <Button v-if="credentials.photo_filename" @click="updatePhoto" class="w-1/3">Save</Button>
           </div>
-          <img class="w-full sm:w-1/3 lg:w-full object-cover rounded-xl border shadow" :src="auth.userPhotoUrl" alt="Profile Picture" />
-        </div>
-        <div class="lg:w-2/3 h-full flex flex-col justify-center">
-          <CardContent>
-            <form>
-              <div class="grid items-center w-full gap-4">
-                <div class="flex flex-col space-y-1.5">
-                  <Label for="email">Email</Label>
-                  <Input :disabled="viewMode" id="email" type="email" placeholder="User Email" v-model="credentials.email" />
-                  <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage>
-                </div>
-
-                <div class="flex flex-col space-y-1.5">
-                  <Label for="password">Password</Label>
-                  <Input :disabled="viewMode" id="password" type="password" v-model="credentials.password" />
-                  <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage>
-                </div>
-
-                <div class="flex flex-col space-y-1.5">
-                  <Label for="name">Name</Label>
-                  <Input :disabled="viewMode" id="name" type="text" v-model="credentials.name" />
-                  <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage>
-                </div>
-
-                <div class="flex flex-col space-y-1.5">
-                  <Label for="nickname">Nickname</Label>
-                  <Input :disabled="viewMode" id="nickname" type="text" v-model="credentials.nickname" />
-                  <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage>
-                </div>
-              </div>
-            </form>
-            <Button v-if="!viewMode" @click="updateProfile" class="w-full mt-5">Update Profile</Button>
-          </CardContent>
         </div>
       </div>
     </div>

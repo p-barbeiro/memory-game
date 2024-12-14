@@ -1,17 +1,20 @@
 <script setup>
 import { ref, inject } from 'vue'
 import Button from './ui/button/Button.vue';
+import { useChatStore } from '@/stores/chat';
 
+const storeChat = useChatStore()
 const socket = inject('socket')
 
 const message = ref('DAD Intermediate Submission')
 const responseData = ref('')
 
 const send = () => {
-    socket.emit('echo', message.value)
+    storeChat.sendMessageToChat(message.value)
+    // socket.emit('echo', message.value)
 }
 
-socket.on('echo', (message) => {
+socket.on('chatMessage', (message) => {
     responseData.value = message
 })
 </script>

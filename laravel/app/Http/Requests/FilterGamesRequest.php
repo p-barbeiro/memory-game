@@ -27,7 +27,7 @@ class FilterGamesRequest extends FormRequest
             "game_status" =>  "nullable|string|in:PE,PL,I,E",
             "filter" =>  "nullable|string|in:time,turns",
             "date" =>  "nullable|string|in:today,this_week,this_month",
-            "order_by"=>  "nullable|string|in:date,time,turns",
+            "order_by"=>  "nullable|string|in:date,time,turns,id",
         ];
     }
 }
