@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ScoreboardRequest;
 use Illuminate\Http\Request;
 
 class ScoreboardController extends Controller
@@ -9,40 +10,13 @@ class ScoreboardController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function scoreboards(ScoreboardRequest $request)
     {
-        //
-    }
+        $type = $request->validated()["type"];
+        $board = $request->validated()["board"];
+        $filter = $request->validated()["filter"];
+        $game_type = $request->validated()["game_type"];
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return null;
     }
 }

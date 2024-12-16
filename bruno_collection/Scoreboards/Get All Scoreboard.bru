@@ -5,15 +5,19 @@ meta {
 }
 
 get {
-  url: {{api_url}}/scoreboards?board=1&filter=time
+  url: {{api_url}}/scoreboards?type=personal&type=global&filter=time&filter=turns&game_type=S&game_type=M&board=1
   body: none
   auth: none
 }
 
 params:query {
-  board: 1
+  type: personal
+  type: global
   filter: time
-  ~filter: turns
+  filter: turns
+  game_type: S
+  game_type: M
+  board: 1
 }
 
 headers {

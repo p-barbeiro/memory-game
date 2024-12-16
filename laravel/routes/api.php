@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -51,8 +52,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/games/{game}/cancel', [GameController::class, 'cancel']);
 
     // Scoreboard Routes
-    Route::get('/scoreboards', [GameController::class, 'global_scoreboard']);
+    Route::get('/scoreboards', [ScoreboardController::class, 'scoreboards']);
 });
-
-
-
