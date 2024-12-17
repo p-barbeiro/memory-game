@@ -5,9 +5,16 @@ meta {
 }
 
 get {
-  url: {{api_url}}/history/personal
+  url: {{api_url}}/history/personal?board=1&game_type=S&game_status=E&order_by=time
   body: none
   auth: none
+}
+
+params:query {
+  board: 1
+  game_type: S
+  game_status: E
+  order_by: time
 }
 
 headers {

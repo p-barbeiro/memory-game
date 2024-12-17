@@ -2,55 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FilterGamesRequest;
+use App\Http\Resources\GameHistoryResource;
 use App\Models\Game;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class GameHistoryController extends Controller
 {
     /**
      * Display the game history for the current user.
      */
-    public function personal_history(Request $request): JsonResponse
+    public function personal_history(FilterGamesRequest $request)
     {
         $user = $request->user();
 
-        $gameHistory = Game::query()
-            ->leftJoin('multiplayer_games_played', 'games.id', '=', 'multiplayer_games_played.game_id')
-            ->leftJoin('users', 'multiplayer_games_played.user_id', '=', 'users.id')
-            ->where('created_user_id', $user->id)
-            ->orWhere('multiplayer_games_played.user_id', $user->id)
-            ->orderBy('games.began_at', 'desc')
-            ->select([
-                'games.began_at',
-                'games.board_id',
-                'games.status',
-                'games.total_time',
-                'games.total_turns_winner',
-                'games.type',
-                'users.nickname',
-                'multiplayer_games_played.player_won',
-            ])
-            ->paginate(20)
-            ->through(fn($game) => $this->formatGameData($game));
+        try {
+            $gameHistory = $this->applyFilters($request)
+                ->where(function ($query) use ($user) {
+                    $query->where('games.created_user_id', $user->id)
+                        ->orWhere('multiplayer_games_played.user_id', $user->id);
+                })
+                ->paginate(20)
+                ->withQueryString();
 
-        return response()->json([
-            $gameHistory
-        ]);
+            return GameHistoryResource::collection($gameHistory);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to get personal history',
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 
     /**
      * Display the game history for all users (admin).
      */
-    public function global_history(Request $request): JsonResponse
+    public function global_history(FilterGamesRequest $request)
     {
-        $user = $request->user();
+        try {
+            $gameHistory = $this->applyFilters($request)
+                ->paginate(20)
+                ->withQueryString();
 
-        $gameHistory = Game::query()
+            return GameHistoryResource::collection($gameHistory);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to get global history',
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Apply filters based on the request input.
+     *
+     * @param FilterGamesRequest $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function applyFilters(FilterGamesRequest $request)
+    {
+        $boardType = $request->validated('board');
+        $gameType = $request->validated('game_type');
+        $gameStatus = $request->validated('game_status');
+        $orderBy = $request->validated('order_by');
+
+        $query = Game::query()
             ->leftJoin('multiplayer_games_played', 'games.id', '=', 'multiplayer_games_played.game_id')
             ->leftJoin('users', 'multiplayer_games_played.user_id', '=', 'users.id')
-            ->orderBy('games.began_at', 'desc')
             ->select([
                 'games.began_at',
                 'games.board_id',
@@ -60,55 +78,36 @@ class GameHistoryController extends Controller
                 'games.type',
                 'users.nickname',
                 'multiplayer_games_played.player_won',
-            ])
-            ->paginate(20)
-            ->through(fn($game) => $this->formatGameData($game));
+            ]);
 
-        // Format and return the response
-        return response()->json([
-            $gameHistory
-        ]);
-    }
+        if ($boardType) {
+            $query->where('games.board_id', (int)$boardType);
+        }
 
-        /**
-     * Format game data into a readable structure.
-     *
-     * @param  object  $game
-     * @return object
-     */
-    private function formatGameData($game): object
-    {
-        $boardSizes = [
-            1 => '3x4',
-            2 => '4x4',
-            3 => '6x6',
-        ];
+        if ($gameType) {
+            $query->where('games.type', $gameType);
+        }
 
-        $statuses = [
-            'P' => 'Pending',
-            'PL' => 'Playing',
-            'E' => 'Ended',
-            'I' => 'Interrupted'
-        ];
+        if ($gameStatus) {
+            $query->where('games.status', $gameStatus);
+        }
 
-        $gameType = [
-            'S' => 'Singleplayer',
-            'M' => 'Multiplayer'
-        ];
+        if ($orderBy) {
+            switch ($orderBy) {
+                case 'date':
+                    $query->orderBy('games.began_at', 'desc');
+                    break;
+                case 'time':
+                    $query->where('games.status', 'E') // Only ended games
+                        ->orderBy('games.total_time', 'asc');
+                    break;
+                case 'turns':
+                    $query->where('games.status', 'E') // Only ended games
+                        ->orderBy('games.total_turns_winner', 'asc');
+                    break;
+            }
+        }
 
-        $playerWon = [
-            null => 'N/A',
-            0 => 'Lost',
-            1 => 'Won',
-        ];
-
-        $game->began_at = Carbon::parse($game->began_at)->format('d-m-Y H:i:s');
-        $game->board_id = $boardSizes[$game->board_id] ?? 'Unknown';
-        $game->status = $statuses[$game->status] ?? 'Unknown';
-        $game->type = $gameType[$game->type] ?? 'Unknown';
-        $game->nickname = $game->nickname ?? 'N/A';
-        $game->player_won = $playerWon[$game->player_won] ?? 'N/A';
-
-        return $game;
+        return $query;
     }
 }
