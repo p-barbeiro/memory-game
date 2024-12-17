@@ -33,38 +33,8 @@ class GameHistoryController extends Controller
                 'multiplayer_games_played.player_won',
             ])
             ->get()
-            ->map(function ($game) {
-                $boardSizes = [
-                    1 => '3x4',
-                    2 => '4x4',
-                    3 => '6X6',
-                ];
-                $statuses = [
-                    'P' => 'Pending',
-                    'PL' => 'Playing',
-                    'E' => 'Ended',
-                    'I' => 'Interrupted'
-                ];
-                $gameType = [
-                    'S' => 'Singleplayer',
-                    'M' => 'Multiplayer'
-                ];
-                $playerWon = [
-                    null => 'N/A',
-                    0 => 'Lost',
-                    1 => 'Won',
-                ];
-                $game->began_at = Carbon::parse($game->began_at)->format('d-m-Y H:i:s');
-                $game->board_id = $boardSizes[$game->board_id];
-                $game->status = $statuses[$game->status];
-                $game->type = $gameType[$game->type];
-                $game->nickname = $game->nickname ?? 'N/A';
-                $game->player_won = $playerWon[$game->player_won];
-                return $game;
-            });
+            ->map(fn($game) => $this->formatGameData($game));
 
-
-        // Format and return the response
         return response()->json([
             $gameHistory
         ]);
@@ -92,40 +62,53 @@ class GameHistoryController extends Controller
                 'multiplayer_games_played.player_won',
             ])
             ->get()
-            ->map(function ($game) {
-                $boardSizes = [
-                    1 => '3x4',
-                    2 => '4x4',
-                    3 => '6X6',
-                ];
-                $statuses = [
-                    'P' => 'Pending',
-                    'PL' => 'Playing',
-                    'E' => 'Ended',
-                    'I' => 'Interrupted'
-                ];
-                $gameType = [
-                    'S' => 'Singleplayer',
-                    'M' => 'Multiplayer'
-                ];
-                $playerWon = [
-                    null => 'N/A',
-                    0 => 'Lost',
-                    1 => 'Won',
-                ];
-                $game->began_at = Carbon::parse($game->began_at)->format('d-m-Y H:i:s');
-                $game->board_id = $boardSizes[$game->board_id];
-                $game->status = $statuses[$game->status];
-                $game->type = $gameType[$game->type];
-                $game->nickname = $game->nickname ?? 'N/A';
-                $game->player_won = $playerWon[$game->player_won];
-                return $game;
-            });
-
+            ->map(fn($game) => $this->formatGameData($game));
 
         // Format and return the response
         return response()->json([
             $gameHistory
         ]);
+    }
+
+        /**
+     * Format game data into a readable structure.
+     *
+     * @param  object  $game
+     * @return object
+     */
+    private function formatGameData($game): object
+    {
+        $boardSizes = [
+            1 => '3x4',
+            2 => '4x4',
+            3 => '6x6',
+        ];
+
+        $statuses = [
+            'P' => 'Pending',
+            'PL' => 'Playing',
+            'E' => 'Ended',
+            'I' => 'Interrupted'
+        ];
+
+        $gameType = [
+            'S' => 'Singleplayer',
+            'M' => 'Multiplayer'
+        ];
+
+        $playerWon = [
+            null => 'N/A',
+            0 => 'Lost',
+            1 => 'Won',
+        ];
+
+        $game->began_at = Carbon::parse($game->began_at)->format('d-m-Y H:i:s');
+        $game->board_id = $boardSizes[$game->board_id] ?? 'Unknown';
+        $game->status = $statuses[$game->status] ?? 'Unknown';
+        $game->type = $gameType[$game->type] ?? 'Unknown';
+        $game->nickname = $game->nickname ?? 'N/A';
+        $game->player_won = $playerWon[$game->player_won] ?? 'N/A';
+
+        return $game;
     }
 }
