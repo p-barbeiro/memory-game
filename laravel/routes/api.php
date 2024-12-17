@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\MultiplayerController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -62,8 +63,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
     // Scoreboard Routes
-    Route::get('/scoreboards', [GameController::class, 'global_scoreboard']);
+    Route::get('/scoreboards/personal', [ScoreboardController::class, 'personal']);
+    Route::get('/scoreboards/global', [ScoreboardController::class, 'global']);
 });
-
-
-

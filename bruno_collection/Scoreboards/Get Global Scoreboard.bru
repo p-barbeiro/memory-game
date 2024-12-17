@@ -1,19 +1,13 @@
 meta {
-  name: Get All Scoreboard
+  name: Get Global Scoreboard
   type: http
   seq: 3
 }
 
 get {
-  url: {{api_url}}/scoreboards?board=1&filter=time
+  url: {{api_url}}/scoreboards/global
   body: none
   auth: none
-}
-
-params:query {
-  board: 1
-  filter: time
-  ~filter: turns
 }
 
 headers {
