@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class ScoreboardController extends Controller
     /**
      * Returns the user's scoreboard.
      */
-    public function personal(Request $request): JsonResponse
+    public function personal_scoreboard(Request $request): JsonResponse
     {
         $user_id = $request->user()->id;
 
@@ -25,7 +26,11 @@ class ScoreboardController extends Controller
             ->orderBy('ended_at')
             ->select('total_time', 'total_turns_winner', 'ended_at')
             ->limit(3)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerTop3ByTimeBoard4x4 = Game::query()
             ->where('status', 'E')
@@ -36,7 +41,11 @@ class ScoreboardController extends Controller
             ->orderBy('ended_at')
             ->select('total_time', 'total_turns_winner', 'ended_at')
             ->limit(3)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerTop3ByTimeBoard6x6 = Game::query()
             ->where('status', 'E')
@@ -47,7 +56,11 @@ class ScoreboardController extends Controller
             ->orderBy('ended_at')
             ->select('total_time', 'total_turns_winner', 'ended_at')
             ->limit(3)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerTop3ByTurnsBoard3x4 = Game::query()
             ->where('status', 'E')
@@ -58,7 +71,11 @@ class ScoreboardController extends Controller
             ->orderBy('ended_at')
             ->select('total_time', 'total_turns_winner', 'ended_at')
             ->limit(3)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerTop3ByTurnsBoard4x4 = Game::query()
             ->where('status', 'E')
@@ -69,7 +86,11 @@ class ScoreboardController extends Controller
             ->orderBy('ended_at')
             ->select('total_time', 'total_turns_winner', 'ended_at')
             ->limit(3)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerTop3ByTurnsBoard6x6 = Game::query()
             ->where('status', 'E')
@@ -80,7 +101,11 @@ class ScoreboardController extends Controller
             ->orderBy('ended_at')
             ->select('total_time', 'total_turns_winner', 'ended_at')
             ->limit(3)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $multiplayerTotalVictoriesAndLosses3x4 = Game::query()
             ->where('status', 'E')
@@ -134,7 +159,7 @@ class ScoreboardController extends Controller
     /**
      * Returns the global scoreboard.
      */
-    public function global(Request $request): JsonResponse
+    public function global_scoreboard(Request $request): JsonResponse
     {
         $singlePlayerBestTime3x4 = Game::query()
             ->where('status', 'E')
@@ -146,7 +171,11 @@ class ScoreboardController extends Controller
                 ->where('board_id', 1)
                 ->min('total_time'))
             ->limit(1)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerBestTime4x4 = Game::query()
             ->where('status', 'E')
@@ -158,7 +187,11 @@ class ScoreboardController extends Controller
                 ->where('board_id', 2)
                 ->min('total_time'))
             ->limit(1)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerBestTime6x6 = Game::query()
             ->where('status', 'E')
@@ -170,7 +203,11 @@ class ScoreboardController extends Controller
                 ->where('board_id', 3)
                 ->min('total_time'))
             ->limit(1)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerMinTurns3x4 = Game::query()
             ->where('status', 'E')
@@ -180,7 +217,11 @@ class ScoreboardController extends Controller
             ->selectRaw('MIN(total_turns_winner) as min_turns, users.nickname, games.ended_at')
             ->groupBy('users.nickname', 'games.ended_at')
             ->limit(1)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerMinTurns4x4 = Game::query()
             ->where('status', 'E')
@@ -190,7 +231,11 @@ class ScoreboardController extends Controller
             ->selectRaw('MIN(total_turns_winner) as min_turns, users.nickname, games.ended_at')
             ->groupBy('users.nickname', 'games.ended_at')
             ->limit(1)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $singlePlayerMinTurns6x6 = Game::query()
             ->where('status', 'E')
@@ -200,7 +245,11 @@ class ScoreboardController extends Controller
             ->selectRaw('MIN(total_turns_winner) as min_turns, users.nickname, games.ended_at')
             ->groupBy('users.nickname', 'games.ended_at')
             ->limit(1)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         $multiplayerTopPlayers = Game::query()
             ->where('status', 'E') // Only completed games
@@ -216,7 +265,11 @@ class ScoreboardController extends Controller
             ->orderBy('total_victories', 'desc') // Sort by total victories
             ->orderBy('last_victory_date') // Resolve ties by earliest victory
             ->limit(5)
-            ->get();
+            ->get()
+            ->map(function ($game) {
+                $game->last_victory_date = Carbon::parse($game->last_victory_date)->format('d-m-Y H:i:s');
+                return $game;
+            });
 
         return response()->json([
             'single_player_best_time_3x4' => $singlePlayerBestTime3x4,
