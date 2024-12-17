@@ -32,8 +32,8 @@ class GameHistoryController extends Controller
                 'users.nickname',
                 'multiplayer_games_played.player_won',
             ])
-            ->get()
-            ->map(fn($game) => $this->formatGameData($game));
+            ->paginate(20)
+            ->through(fn($game) => $this->formatGameData($game));
 
         return response()->json([
             $gameHistory
@@ -61,8 +61,8 @@ class GameHistoryController extends Controller
                 'users.nickname',
                 'multiplayer_games_played.player_won',
             ])
-            ->get()
-            ->map(fn($game) => $this->formatGameData($game));
+            ->paginate(20)
+            ->through(fn($game) => $this->formatGameData($game));
 
         // Format and return the response
         return response()->json([
