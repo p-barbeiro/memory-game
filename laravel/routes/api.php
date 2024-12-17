@@ -52,5 +52,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/games/{game}/cancel', [GameController::class, 'cancel']);
 
     // Scoreboard Routes
-    Route::get('/scoreboards', [ScoreboardController::class, 'scoreboards']);
+    Route::get('/scoreboards/personal', [ScoreboardController::class, 'personal']);
+    Route::get('/scoreboards/global', [ScoreboardController::class, 'global']);
 });
