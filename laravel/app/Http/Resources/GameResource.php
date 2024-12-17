@@ -22,7 +22,7 @@ class GameResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'create_user_id' => new UserResource($creator),
+            'created_user_id' => new UserResource($creator),
             'winner_user_id' => $this->when($this->type != "S" && $this->status == "E", new UserResource($winner)),
             'opponent_user_id' => $this->when($this->type == "M", new UserResource($this->find_opponent())),
             'type' => $this->type == 'S' ? 'Single-player' : 'Multiplayer',

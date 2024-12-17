@@ -5,16 +5,16 @@ meta {
 }
 
 get {
-  url: {{api_url}}/users/8/games?qnt=15&date=today&page=2
+  url: {{api_url}}/users/8/games?order_by=turns
   body: none
   auth: none
 }
 
 params:query {
-  qnt: 15
-  date: today
-  page: 2
-  ~order_by: turns
+  order_by: turns
+  ~qnt: 15
+  ~date: today
+  ~page: 2
   ~game_type: M
   ~date: this_week
   ~date: this_month

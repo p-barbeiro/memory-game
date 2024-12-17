@@ -10,4 +10,14 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+export function toProperCase(str) {
+  return str
+      .toLowerCase()  // First, make the string lowercase
+      .split(' ')     // Split the string into words
+      .map(word => {
+          return word.charAt(0).toUpperCase() + word.slice(1);  // Capitalize the first letter of each word
+      })
+      .join(' ');      // Join the words back together
+}
+
 export const globalEvent = ref(new Map());

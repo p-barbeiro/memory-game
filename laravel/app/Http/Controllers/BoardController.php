@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BoardResource;
 use App\Models\Board;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class BoardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return BoardResource::collection(Board::all());

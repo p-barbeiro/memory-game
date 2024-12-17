@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { toProperCase } from '@/lib/utils'
 
 export const useErrorStore = defineStore('error', () => {
   const { toast } = useToast()
@@ -43,19 +44,19 @@ export const useErrorStore = defineStore('error', () => {
     let toastMessage = mainMessage
     switch (status) {
       case 401:
-        toastMessage = 'You are not authorized to access the server API!'
+        toastMessage = mainMessage??'You are not authorized to access the server API!'
         break
       case 403:
-        toastMessage = 'You are forbidden to access the server resource!'
+        toastMessage = mainMessage??`You are forbidden to access the server resource! `
         break
       case 404:
-        toastMessage = 'Server resource not found!'
+        toastMessage = mainMessage??'Server resource not found!'
         break
       case 422:
         toastMessage = 'Data is invalid. Check field error messages!'
         break
       default:
-        toastMessage = `An error occurred! Message from the server: "${mainMessage}"`
+        toastMessage = `An error occurred! ${toProperCase(mainMessage)}`
     }
     toast({
       title: titleMessage,

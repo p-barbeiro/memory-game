@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateGameRequest extends FormRequest
+class MultiplayerUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,8 @@ class CreateGameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|string|in:S,M',
-            'board_id' => 'required|integer|exists:boards,id',
-            'created_user_id' => 'sometimes|integer|exists:users,id',
+            'player_won' => 'required|integer|in:0,1',
+            'pairs_discovered' => 'required|integer|min:0',
         ];
     }
 }

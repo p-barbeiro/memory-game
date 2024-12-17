@@ -56,12 +56,12 @@ const getUserTextColor = (userId) => {
           </div>
         </div>
       </div>
-      <div v-else class="h-60 flex text-sm bg-gray-50 border border-indigo-950/50 p-1 place-items-end">
-        <div class="ml-1">No messages yet! Be the first to send a message!</div>
+      <div v-else class="rounded-md h-60 flex text-sm bg-gray-50 border border-indigo-950/50 p-1 place-items-end">
+        <div class="ml-1 text-gray-500">No messages yet! Be the first to send a message!</div>
       </div>
       <div class="w-full flex flex-col h-full">
         <div class="flex flex-row items-center mt-1 border border-indigo-950/50 bg-white h-10 rounded-md">
-          <Input id="inputMessage" v-model="message" @keydown.enter="sendMessageToChat" class="h-full rounded-md border-none focus-visible:ring-0" placeholder="Type your message" />
+          <Input id="inputMessage" v-model="message" @keydown.enter="sendMessageToChat" class="h-full text-gray-500 rounded-md border-none focus-visible:ring-0" placeholder="Type your message" />
           <Icon icon="proicons:send" width="24" height="24" class="h-full mx-2 cursor-pointer" @click="sendMessageToChat" />
         </div>
       </div>

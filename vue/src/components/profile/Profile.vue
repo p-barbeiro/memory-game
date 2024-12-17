@@ -148,9 +148,7 @@ const removeAcount = () => {
 
 const removeAccountConfirmation = (message) => {
   if (message === `remove-${auth.userNickname}`) {
-    // storeAuth.removeAccount()
-    // router.push({ name: 'home' })
-    console.log('DEBUG: Remove account')
+    storeAuth.removeAccount()
   } else {
     toast({
       title: 'Account Removal Failed',

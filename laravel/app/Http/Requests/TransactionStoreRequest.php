@@ -24,7 +24,7 @@ class TransactionStoreRequest extends FormRequest
         $rules = [
             'type' => 'required|string|in:B,P,I',
             'brain_coins' => 'required|integer',
-            'game_id' => 'required_if:type,I|integer|exists:games,id',
+            'game_id' => 'sometimes|integer|exists:games,id',
             'euros' => 'required_if:type,P|nullable|numeric|min:0',
             'payment_type' => 'required_if:type,P|nullable|string|in:MBWAY,PAYPAL,IBAN,MB,VISA',
         ];

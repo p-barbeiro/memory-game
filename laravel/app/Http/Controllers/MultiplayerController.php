@@ -2,64 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MultiplayerStoreRequest;
+use App\Http\Requests\MultiplayerUpdateRequest;
+use App\Http\Resources\MultiplayerResource;
 use App\Models\Multiplayer;
 use Illuminate\Http\Request;
 
 class MultiplayerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function store(MultiplayerStoreRequest $request)
     {
-        //
+        $newMultiplayer = new Multiplayer();
+
+        try {
+            $newMultiplayer->fill($request->validated());
+            $newMultiplayer->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to create multiplayer',
+                'message' => $e->getMessage()
+            ], 422);
+        }
+
+        return new MultiplayerResource($newMultiplayer);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function update(MultiplayerUpdateRequest $request, Multiplayer $multiplayer)
     {
-        //
-    }
+        try {
+            $multiplayer->player_won = $request->validated('player_won');
+            $multiplayer->pairs_discovered = $request->validated('pairs_discovered');
+            $multiplayer->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to update multiplayer',
+                'message' => $e->getMessage()
+            ], 422);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Multiplayer $multiplayer)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Multiplayer $multiplayer)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Multiplayer $multiplayer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Multiplayer $multiplayer)
-    {
-        //
+        return new MultiplayerResource($multiplayer);
     }
 }

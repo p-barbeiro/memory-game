@@ -1,11 +1,11 @@
 meta {
-  name: Block-Unblock One User
+  name: Get User
   type: http
-  seq: 3
+  seq: 2
 }
 
-post {
-  url: {{api_url}}/users/7/lock_toggle
+get {
+  url: {{api_url}}/users/{{user_id}}
   body: none
   auth: none
 }

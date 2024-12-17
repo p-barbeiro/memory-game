@@ -29,7 +29,7 @@ class GameController extends Controller
 
         $newGame->fill($request->validated());
         $newGame->fill([
-            'created_user_id' => $request->user()->id,
+            'created_user_id' => $request->created_user_id??$request->user()->id,
             'winner_user_id' => null,
             'status' => 'PE',
             'began_at' => null,
@@ -121,8 +121,11 @@ class GameController extends Controller
     public function update(Request $request, Game $game)
     {
         $game->fill($request->all());
-        $game->winner_user_id = $request->user()->id;
-        $game->ended_at = Carbon::now();
+        $game->winner_user_id = $request->has('winner_user_id')? $request->winner_user_id : null;
+        if ($request->has('status')) {
+            $game->status = $request->status;
+        }
+        $game->ended_at = ($game->status=="E" || $game->status=="I") ? Carbon::now(): null;
         $game->save();
 
         return new GameResource($game);

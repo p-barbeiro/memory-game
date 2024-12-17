@@ -14,8 +14,13 @@ class MultiplayerResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //TODO: Implement MultiplayerResource
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'user' => new UserResource($this->user),
+            'game' => new GameResource($this->game),
+            'player_won' => $this->when($this->player_won, $this->player_won),
+            'pairs_discoverd' => $this->when($this->pairs_discoverd > 0, $this->pairs_discoverd),
+        ];
 
     }
 }

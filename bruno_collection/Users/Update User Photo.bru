@@ -1,0 +1,21 @@
+meta {
+  name: Update User Photo
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}/users/{{user_id}}/photo
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+  Accept: application/json
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  photo_filename: @file(/home/pbarbeiro/Desktop/memory-game/vue/src/assets/avatar-none.png)
+}

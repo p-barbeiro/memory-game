@@ -14,3 +14,8 @@ headers {
   Accept: application/json
   Authorization: Bearer {{token}}
 }
+
+tests {
+  var user_id = res.getBody().data.id
+  bru.setEnvVar("user_id",user_id)
+}

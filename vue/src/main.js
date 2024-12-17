@@ -2,6 +2,7 @@ import axios from 'axios'
 import { createPinia } from 'pinia'
 import { io } from 'socket.io-client'
 import { createApp } from 'vue'
+import 'prismjs/themes/prism-tomorrow.css';  // You can choose other themes too
 
 import '@/assets/base.css'
 

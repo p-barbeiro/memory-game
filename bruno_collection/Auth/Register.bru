@@ -1,0 +1,26 @@
+meta {
+  name: Register
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api_url}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "jose",
+    "email":"mail1@mail.pt",
+    "password":"12345678",
+    "password_confirmation":"12345678",
+    "nickname": "ze1"
+  }
+}
+
+tests {
+  var token = res.getBody().token
+  bru.setEnvVar("token",token)
+}

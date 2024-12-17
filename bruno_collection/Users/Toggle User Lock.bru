@@ -1,0 +1,16 @@
+meta {
+  name: Toggle User Lock
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{api_url}}/users/{{user_id}}/toggleLock
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+  Accept: application/json
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2 mt-5 content-center w-full md:w-auto" :class="style">
+  <div class="grid gap-1 mt-5 content-center w-full md:w-auto" :style="style">
     <div v-for="(card, index) in cards" :key="index" class="md:w-40 relative aspect-square cursor-pointer select-none" @click="handleCardClick(card)">
       <!-- Card front -->
       <div class="absolute bg-gray-50 w-full h-full rounded flex justify-center items-center shadow transition-transform duration-500 transform preserve-3d" :class="{ 'flip-up': card.flipped || card.matched, 'flip-down': !card.flipped && !card.matched, hidden: card.matched }">
@@ -40,8 +40,9 @@ const handleCardClick = (card) => {
   emit('card-click', card)
 }
 
-const style = `grid-cols-${props.board.columns}`
-
+const style = computed(() => {
+  return { gridTemplateColumns: `repeat(${props.board?.columns}, 1fr)` }
+})
 </script>
 
 <style scoped>

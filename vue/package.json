@@ -22,6 +22,7 @@
     "lucide-vue-next": "^0.456.0",
     "pinia": "^2.3.0",
     "postcss": "^8.4.49",
+    "prismjs": "^1.29.0",
     "radix-vue": "^1.9.11",
     "socket.io-client": "^4.8.1",
     "tailwind-merge": "^2.5.5",

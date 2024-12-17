@@ -1,7 +1,7 @@
 import { useErrorStore } from '@/stores/error'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { computed, ref, inject } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
@@ -79,7 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
     resetIntervalToRefreshToken()
     if (user.value) {
       socket.emit('logout', user.value)
-  }    
+    }
     user.value = null
     token.value = ''
     localStorage.removeItem('token')
@@ -189,11 +189,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const updateProfile = async (credentials) => {
     storeError.resetMessages()
-    try {    
+    try {
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       axios.defaults.headers.common['Content-Type'] = 'application/json'
       const response = await axios.patch(`users/${user.value.id}`, credentials)
-      
+
       if (response.status !== 200) {
         throw response
       }
@@ -232,6 +232,30 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const removeAccount = async () => {
+    storeError.resetMessages()
+    try {
+      axios.defaults.headers.common['Content-Type'] = 'application/json'
+      axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+
+      const response = await axios.delete(`users/${user.value.id}`)
+      if (response.status !== 200) {
+        throw response
+      }
+      clearUser()
+      router.push({ name: 'home' })
+      toast({
+        title: 'Account Deleted',
+        description: 'Your account has been deleted successfully!',
+        variant: 'info'
+      })
+      return true
+    } catch (e) {
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Account Deletion Failed!')
+      return false
+    }
+  }
+
   return {
     user,
     userName,
@@ -252,6 +276,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     updateProfile,
     updatePhoto,
-    getPhotoURL
+    getPhotoURL,
+    removeAccount
   }
 })

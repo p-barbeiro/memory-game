@@ -29,6 +29,8 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import IconCoin from '../icons/IconCoin.vue';
 import Button from '../ui/button/Button.vue';
+import Lobby from '../multiplayer/Lobby.vue';
+import { useMultiplayerStore } from '@/stores/multiplayer';
 
 const props = defineProps({
   gamemode: String,
@@ -39,6 +41,7 @@ const props = defineProps({
 const link = `/src/assets/img/${props.img}.jpg`
 const router = useRouter()
 const auth = useAuthStore()
+const storeMultiplayer = useMultiplayerStore()
 
 const multiplayerDisabled = computed(() => {
   return !auth.user && props.gamemode === 'Multiplayer'
@@ -54,7 +57,7 @@ const handleGamemode = () => {
 
 const handleMultiplayer = () => {
   console.log('Multiplayer mode selected')
-  if (auth.user.brain_coins >= 5) {
+  if (auth.user.brain_coins >= 5 || storeMultiplayer.totalGames>0) {
     router.push({ name: 'lobby' })
   } else {
     toast({

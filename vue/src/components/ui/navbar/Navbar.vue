@@ -42,7 +42,10 @@
             <hr />
             <MobileMenuProfile />
           </ul>
-
+          <div v-if="auth.isPlayer" class="flex flex-row gap-x-2 items-center w-16 h-16 p-1 mr-5">
+            <IconCoin />
+            <p class="font-bold">{{ auth.userBrainCoins }}</p>
+          </div>
           <IconHambuger />
         </div>
       </div>

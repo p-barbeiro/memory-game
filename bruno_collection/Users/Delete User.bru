@@ -1,16 +1,22 @@
 meta {
-  name: Update One User
+  name: Delete User
   type: http
   seq: 5
 }
 
-get {
-  url: {{api_url}}/users/1
-  body: none
+delete {
+  url: {{api_url}}/users/{{user_id}}
+  body: json
   auth: none
 }
 
 headers {
   Authorization: Bearer {{token}}
   Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Zé"
+  }
 }

@@ -80,10 +80,6 @@ const stopTimer = () => {
   timer = null // Reset the timer reference
 }
 
-const toggleTimer = () => {
-  timerStatus.value = !timerStatus.value
-}
-
 //board
 const board = computed(() => {
   if (auth.user) return game.value?.board

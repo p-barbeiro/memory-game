@@ -104,16 +104,16 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("addGame", (board, callback) => {
+  socket.on("addGame", (board, gameID, callback) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return;
     }
-    
-    const game = lobby.addGame(socket.data.user, socket.id, board);
+
+    const game = lobby.addGame(socket.data.user, socket.id, board, gameID);
     io.to("lobby").emit("lobbyChanged", lobby.getGames());
     console.log("User " + socket.data.user.name + " is creating a game");
     console.log("Game created: ", game);
-    
+
     if (callback) {
       callback(game);
     }
@@ -133,13 +133,14 @@ io.on("connection", (socket) => {
       }
       return;
     }
-    game.player2 = socket.data.user;
-    game.player2SocketId = socket.id;
-    lobby.removeGame(id);
-    io.to("lobby").emit("lobbyChanged", lobby.getGames());
-    console.log(game);
-    if (callback) {
-      callback(game);
+    lobby.addPlayerToGame(game, socket.data.user, socket.id);
+    if (game.players == game.total_players) {
+      lobby.removeGame(id);
+      io.to("lobby").emit("lobbyChanged", lobby.getGames());
+      console.log(game);
+      if (callback) {
+        callback(game);
+      }
     }
   });
 
@@ -179,8 +180,10 @@ io.on("connection", (socket) => {
     io.sockets.sockets.get(game.player2SocketId)?.join(roomName);
     // store the game data directly on the room object:
     socket.adapter.rooms.get(roomName).game = game;
+    console.log(socket.adapter.rooms.get(roomName));
+
     // emit the "gameStarted" to all users in the room
-    io.to(roomName).emit("gameStarted", game);
+    io.to(roomName).emit("gameStart", game);
     if (callback) {
       callback(game);
     }
@@ -202,13 +205,33 @@ io.on("connection", (socket) => {
     const roomName = "game_" + playData.gameId;
     // load game state from the game data stored directly on the room object:
     const game = socket.adapter.rooms.get(roomName).game;
-    const playResult = gameEngine.play(game, playData.index, socket.id);
+    const playResult = gameEngine.play(game, playData.card, socket.id);
     if (playResult !== true) {
       if (callback) {
         callback(playResult);
       }
       return;
     }
+    // notify all users playing the game (in the room) that the game state has changed
+    // Also, notify them that the game has ended
+    io.to(roomName).emit("gameChanged", game);
+    if (gameEngine.gameEnded(game)) {
+      io.to(roomName).emit("gameEnded", game);
+    }
+    if (callback) {
+      callback(game);
+    }
+  });
+
+  socket.on("switchPlayer", (gameId, callback) => {
+    if (!util.checkAuthenticatedUser(socket, callback)) {
+      return;
+    }
+    const roomName = "game_" + gameId;
+    // load game state from the game data stored directly on the room object:
+    const game = socket.adapter.rooms.get(roomName).game;
+    gameEngine.switchPlayer(game);
+    
     // notify all users playing the game (in the room) that the game state has changed
     // Also, notify them that the game has ended
     io.to(roomName).emit("gameChanged", game);
@@ -269,4 +292,5 @@ io.on("connection", (socket) => {
       callback(true);
     }
   });
+
 });

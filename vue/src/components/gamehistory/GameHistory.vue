@@ -31,7 +31,7 @@ watch(gameModeFilterOption, (newValue) => {
   if (newValue === 'M') {
     columns.value = [
       { title: 'Game type', key: 'type' },
-      { title: 'Created By', key: 'create_user_id', subkey: 'nickname' },
+      { title: 'Created By', key: 'created_user_id', subkey: 'nickname' },
       { title: 'Winner', key: 'winner_user_id', subkey: 'nickname' },
       { title: 'Opponent', key: 'opponent_user_id', subkey: 'nickname' },
       { title: 'Start date', key: 'start_date' },

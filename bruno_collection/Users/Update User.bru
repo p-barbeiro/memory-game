@@ -1,16 +1,22 @@
 meta {
-  name: Get One User
+  name: Update User
   type: http
   seq: 2
 }
 
-get {
-  url: {{api_url}}/users/1
-  body: none
+patch {
+  url: {{api_url}}/users/{{user_id}}
+  body: json
   auth: none
 }
 
 headers {
   Authorization: Bearer {{token}}
   Accept: application/json
+}
+
+body:json {
+  {
+    "name": "José"
+  }
 }

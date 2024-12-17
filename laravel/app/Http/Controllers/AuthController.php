@@ -30,7 +30,10 @@ class AuthController extends Controller
         $this->purgeExpiredTokens();
         $credentials = $request->validated();
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Your account does not exist or your password is incorrect.'], 401);
+        }
+        if ($request->user()->blocked) { // Assuming you have a field `is_blocked` in your users table
+            return response()->json(['message' => 'Your account is blocked. Please contact support.'], 403);
         }
         $token = $request->user()->createToken('authToken', ['*'], now()->addHours(2))->plainTextToken;
         return response()->json(['token' => $token]);

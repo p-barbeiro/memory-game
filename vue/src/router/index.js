@@ -121,15 +121,15 @@ const router = createRouter({
         title: 'Fuel Your Fun – Buy Coins Now!'
       }
     },
-        //lobby
-        {
-          path: '/lobby',
-          name: 'lobby',
-          component: Lobby,
-          meta: {
-            title: 'Prepare yourself for battle!'
-          }
-        },
+    //lobby
+    {
+      path: '/lobby',
+      name: 'lobby',
+      component: Lobby,
+      meta: {
+        title: 'Prepare yourself for battle!'
+      }
+    },
     //checkout
     {
       path: '/store/checkout/:amount',
@@ -183,7 +183,7 @@ router.beforeEach(async (to, from, next) => {
     handlingFirstRoute = false
     await storeAuth.restoreToken()
   }
- 
+
   //authenticated users can't acess this pages
   const authPagesDisable = ['login', 'register', 'registerSuccess']
   if (authPagesDisable.includes(to.name) && storeAuth.user) {
@@ -192,7 +192,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   //guest users can't acess this pages
-  const guestPagesDisable = ['profile', 'history', 'history', 'transactions', 'store']
+  const guestPagesDisable = ['profile', 'history', 'history', 'transactions', 'store', 'lobby', 'checkout']
   if (guestPagesDisable.includes(to.name) && !storeAuth.user) {
     next({ name: 'home' })
     return

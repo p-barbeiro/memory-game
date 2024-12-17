@@ -1,0 +1,23 @@
+meta {
+  name: Update Multiplayer Game Played
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{api_url}}/games/multiplayer/2276
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "player_won": 1,
+    "pairs_discovered": 5
+  }
+}

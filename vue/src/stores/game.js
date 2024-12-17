@@ -2,7 +2,7 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import { useErrorStore } from '@/stores/error'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
 import { useAuthStore } from './auth'
 import { useRouter } from 'vue-router'
 
@@ -13,6 +13,8 @@ export const useGameStore = defineStore('game', () => {
   const router = useRouter()
 
   const games = ref([])
+  const gamesMP = ref([])
+
   const meta = ref([])
   const links = ref([])
 
@@ -52,7 +54,7 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
-  const newGame = async (boardID, game_type = 'S') => {
+  const newGame = async (boardID, game_type = 'S', creator = undefined) => {
     storeError.resetMessages()
     try {
       axios.defaults.headers.common.Authorization = 'Bearer ' + auth.token
@@ -63,17 +65,22 @@ export const useGameStore = defineStore('game', () => {
         type: game_type
       }
 
+      if (creator) {
+        body.created_user_id = creator
+      }
       const response = await axios.post(`games`, body)
       console.log(response)
 
       if (response.status === 201) {
         const game = response.data.data
         console.log(game)
-        toast({
-          title: 'New game created!',
-          variant: 'success'
-        })
-        router.push({ name: 'game', params: { gameid: game.id } })
+        if (game_type === 'S') {
+          toast({
+            title: 'New game created!',
+            variant: 'success'
+          })
+          router.push({ name: 'game', params: { gameid: game.id } })
+        }
         return game
       }
     } catch (e) {
@@ -94,7 +101,7 @@ export const useGameStore = defineStore('game', () => {
       }
 
       const response = await axios.patch(`games/${gameID}`, body)
-
+      console.log("UPDATE", response)
       if (response.status === 200) {
         console.log(game)
         return response.data.data
@@ -139,7 +146,7 @@ export const useGameStore = defineStore('game', () => {
 
       if (response.status === 200) {
         console.log('game canceled')
-        router.push({ name: 'boardSelector' })
+        if (router.currentRoute.name === 'game' && router.currentRoute.params.gameid === gameID) router.push({ name: 'boardSelector' })
         return response.data.data
       }
     } catch (e) {
@@ -155,7 +162,7 @@ export const useGameStore = defineStore('game', () => {
   const fetchGame = async (gameID) => {
     storeError.resetMessages()
     try {
-        axios.defaults.headers.common.Authorization = 'Bearer ' + auth.token
+      axios.defaults.headers.common.Authorization = 'Bearer ' + auth.token
       axios.defaults.headers.common['Content-Type'] = 'application/json'
 
       const response = await axios.get('games/' + gameID)
@@ -172,6 +179,7 @@ export const useGameStore = defineStore('game', () => {
 
   return {
     games,
+    gamesMP,
     meta,
     links,
     totalGames,

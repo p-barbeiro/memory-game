@@ -1,0 +1,23 @@
+meta {
+  name: Create Multiplayer Game Played
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api_url}}/games/multiplayer
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "game_id": 1234,
+    "user_id": 5
+  }
+}

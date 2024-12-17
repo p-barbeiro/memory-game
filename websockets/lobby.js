@@ -1,51 +1,64 @@
-exports.createLobby = () => { 
-    const games = new Map()
-    let id = 1
+exports.createLobby = () => {
+  const games = new Map();
+  let id = 1;
 
-    const addGame = (user, socketId, board) => {
-        id++
-        const game = {
-            id: id,
-            created_at: Date.now(),
-            player1: user,
-            player1SocketId: socketId,
-            board: board
-        }
-        games.set(id, game)
-        return game
-    }
-    
-    const removeGame = (id) => {
-        games.delete(id)
-        return games
-    }
+  const addGame = (user, socketId, board, gameID) => {
+    id++
+    const game = {
+      id: id,
+      total_players: 2,
+      players: 1,
+      created_at: Date.now(),
+      board: board,
+      game_id: gameID,
+    };
+    game[`player${game.players}`] = user;
+    game[`player${game.players}SocketId`] = socketId;
+    games.set(id, game);
+    return game;
+  };
 
-    const existsGame = (id) => {
-        return games.has(id)
-    }
+  const addPlayerToGame = (game, user, socketId) => {
+    game.players++;
+    game[`player${game.players}`] = user;
+    game[`player${game.players}SocketId`] = socketId;
+    return game;
+  };
 
-    const getGame = (id) => {
-        return games.get(id)
-    }
+  const removeGame = (id) => {
+    games.delete(id);
+    return games;
+  };
 
-    const getGames = () => {
-        return [...games.values()]
-    }
+  const existsGame = (id) => {
+    return games.has(id);
+  };
 
-    const leaveLobby = (socketId) => {
-        const gamesToDelete = [...games.values()].filter(game => game.player1SocketId == socketId)
-        gamesToDelete.forEach(game => {
-            games.delete(game.id)
-        })
-        return getGames()
-    }
+  const getGame = (id) => {
+    return games.get(id);
+  };
 
-    return {
-        getGames,
-        getGame,
-        addGame,
-        removeGame,
-        existsGame,
-        leaveLobby
-    }
-}
+  const getGames = () => {
+    return [...games.values()];
+  };
+
+  const leaveLobby = (socketId) => {
+    const gamesToDelete = [...games.values()].filter(
+      (game) => game.player1SocketId == socketId
+    );
+    gamesToDelete.forEach((game) => {
+      games.delete(game.id);
+    });
+    return getGames();
+  };
+
+  return {
+    getGames,
+    getGame,
+    addGame,
+    removeGame,
+    existsGame,
+    leaveLobby,
+    addPlayerToGame,
+  };
+};
