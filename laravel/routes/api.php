@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\GameHistoryController;
 use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\MultiplayerController;
 use App\Http\Controllers\TransactionController;
@@ -61,8 +62,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/games/{game}/start', [GameController::class, 'game_start']);
     Route::post('/games/{game}/cancel', [GameController::class, 'cancel']);
 
+    // History Routes
+    Route::get('/history/personal', [GameHistoryController::class, 'personal_history']);
+    Route::get('/history/global', [GameHistoryController::class, 'global_history']);
 
     // Scoreboard Routes
-    Route::get('/scoreboards/personal', [ScoreboardController::class, 'personal']);
-    Route::get('/scoreboards/global', [ScoreboardController::class, 'global']);
+    Route::get('/scoreboards/personal', [ScoreboardController::class, 'personal_scoreboard']);
+    Route::get('/scoreboards/global', [ScoreboardController::class, 'global_scoreboard']);
+
 });

@@ -1,0 +1,16 @@
+meta {
+  name: Get Personal History
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{api_url}}/history/personal
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}
