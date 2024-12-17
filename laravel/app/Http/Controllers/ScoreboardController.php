@@ -164,34 +164,32 @@ class ScoreboardController extends Controller
         $singlePlayerBestTime3x4 = Game::query()
             ->where('status', 'E')
             ->where('games.type', 'S')
-            ->where('games.board_id', 1)
+            ->where('games.board_id', 1) // Board 3x4
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->select('users.nickname', 'games.total_time as best_time', 'games.ended_at')
-            ->where('games.total_time', '=', DB::table('games')
-                ->where('board_id', 1)
-                ->min('total_time'))
-            ->limit(1)
+            ->orderBy('games.total_time', 'asc')  // Order by total_time (ascending)
+            ->limit(3)  // Limit to top 3 best times
             ->get()
             ->map(function ($game) {
                 $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
                 return $game;
             });
 
+
         $singlePlayerBestTime4x4 = Game::query()
             ->where('status', 'E')
             ->where('games.type', 'S')
-            ->where('games.board_id', 2)
+            ->where('games.board_id', 2) // Board 4x4
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->select('users.nickname', 'games.total_time as best_time', 'games.ended_at')
-            ->where('games.total_time', '=', DB::table('games')
-                ->where('board_id', 2)
-                ->min('total_time'))
-            ->limit(1)
+            ->orderBy('games.total_time', 'asc')  // Order by total_time (ascending)
+            ->limit(3)  // Limit to top 3 best times
             ->get()
             ->map(function ($game) {
                 $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
                 return $game;
             });
+
 
         $singlePlayerBestTime6x6 = Game::query()
             ->where('status', 'E')
@@ -199,10 +197,8 @@ class ScoreboardController extends Controller
             ->where('games.board_id', 3)
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->select('users.nickname', 'games.total_time as best_time', 'games.ended_at')
-            ->where('games.total_time', '=', DB::table('games')
-                ->where('board_id', 3)
-                ->min('total_time'))
-            ->limit(1)
+            ->orderBy('games.total_time', 'asc')  // Order by total_time in ascending order (best times first)
+            ->limit(3)  // Get the top 3 best times
             ->get()
             ->map(function ($game) {
                 $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
@@ -216,7 +212,7 @@ class ScoreboardController extends Controller
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->selectRaw('MIN(total_turns_winner) as min_turns, users.nickname, games.ended_at')
             ->groupBy('users.nickname', 'games.ended_at')
-            ->limit(1)
+            ->limit(3)
             ->get()
             ->map(function ($game) {
                 $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
@@ -230,7 +226,7 @@ class ScoreboardController extends Controller
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->selectRaw('MIN(total_turns_winner) as min_turns, users.nickname, games.ended_at')
             ->groupBy('users.nickname', 'games.ended_at')
-            ->limit(1)
+            ->limit(3)
             ->get()
             ->map(function ($game) {
                 $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');
@@ -244,7 +240,7 @@ class ScoreboardController extends Controller
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->selectRaw('MIN(total_turns_winner) as min_turns, users.nickname, games.ended_at')
             ->groupBy('users.nickname', 'games.ended_at')
-            ->limit(1)
+            ->limit(3)
             ->get()
             ->map(function ($game) {
                 $game->ended_at = Carbon::parse($game->ended_at)->format('d-m-Y H:i:s');

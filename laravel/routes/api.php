@@ -6,6 +6,7 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameHistoryController;
 use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\MultiplayerController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
@@ -18,6 +19,8 @@ Route::post('/auth/register', [UserController::class, 'store']);
 
 Route::get('/boards', [BoardController::class, 'index']);
 Route::get('/boards/{board}', [BoardController::class, 'show']);
+Route::get('/scoreboards/global', [ScoreboardController::class, 'global_scoreboard']);
+Route::get('/statistics/global', [StatisticsController::class, 'globalStatistics']);
 
 // Protected Routes
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -42,10 +45,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         // Multiplayer Routes
         Route::post('/games/multiplayer', [MultiplayerController::class, 'store']);
         Route::patch('/games/multiplayer/{multiplayer}', [MultiplayerController::class, 'update'])->can('update', 'multiplayer');
+
+        // Statistics Routes
+        Route::get('/statistics/personal', [StatisticsController::class, 'personalStatistics']);
+
+        // Scoreboard Routes
+        Route::get('/scoreboards/personal', [ScoreboardController::class, 'personal_scoreboard']);
     });
 
-
-    /*Ate aqui as rotas estao ok*/
+    // Only Admin Routes
+    Route::middleware('can:adminOnly')->group(function () {
+        Route::get('/statistics/admin', [StatisticsController::class, 'adminStatistics']);
+    });
 
 
 //    Route::apiResource('/users', UserController::class)->only(['update']);
@@ -65,9 +76,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // History Routes
     Route::get('/history/personal', [GameHistoryController::class, 'personal_history']);
     Route::get('/history/global', [GameHistoryController::class, 'global_history']);
-
-    // Scoreboard Routes
-    Route::get('/scoreboards/personal', [ScoreboardController::class, 'personal_scoreboard']);
-    Route::get('/scoreboards/global', [ScoreboardController::class, 'global_scoreboard']);
-
 });
