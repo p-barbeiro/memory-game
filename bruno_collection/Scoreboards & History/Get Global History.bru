@@ -1,13 +1,20 @@
 meta {
   name: Get Global History
   type: http
-  seq: 3
+  seq: 4
 }
 
 get {
-  url: {{api_url}}/history/global
+  url: {{api_url}}/history/global?board=2&game_type=M&game_status=E&order_by=turns
   body: none
   auth: none
+}
+
+params:query {
+  board: 2
+  game_type: M
+  game_status: E
+  order_by: turns
 }
 
 headers {

@@ -60,9 +60,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 //    Route::apiResource('/users', UserController::class)->only(['update']);
-    Route::get('/users/{user}/scoreboard', [GameController::class, 'scoreboard']);
     Route::get('/users/{id}/transactions', [TransactionController::class, 'show']); // OK
-    Route::get('/users/{id}/games', [GameController::class, 'show_by_user']); //OK
 
     // Transaction Routes
     Route::apiResource('/transactions', TransactionController::class)->only(['index', 'store', 'destroy']);

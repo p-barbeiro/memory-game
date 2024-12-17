@@ -99,11 +99,11 @@ class GameHistoryController extends Controller
                     break;
                 case 'time':
                     $query->where('games.status', 'E') // Only ended games
-                        ->orderBy('games.total_time', 'asc');
+                    ->orderBy('games.total_time', 'asc');
                     break;
                 case 'turns':
                     $query->where('games.status', 'E') // Only ended games
-                        ->orderBy('games.total_turns_winner', 'asc');
+                    ->orderBy('games.total_turns_winner', 'asc');
                     break;
             }
         }
