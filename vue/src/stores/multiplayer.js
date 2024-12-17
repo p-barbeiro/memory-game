@@ -104,7 +104,16 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     updateGame(game)
     console.log('Game ended: ', game)
     // Player that created the game is responsible for updating on the database
-    const winner = game.gameStatus === 1 ? game.player1.id : game.player2.id
+    const winner = () => {
+      switch (game.gameStatus) {
+        case 1:
+          return game.player1.id
+        case 2:
+          return game.player2.id
+        default:
+          return null
+      }
+    }
 
     if (playerNumberOfCurrentUser(game) === 1) {
       const APIresponse = await gameStore.updateGame(game.id, { status: 'E', winner_user_id: winner })
