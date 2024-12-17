@@ -167,9 +167,7 @@ class ScoreboardController extends Controller
             ->where('games.board_id', 1)
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->select('users.nickname', 'games.total_time as best_time', 'games.ended_at')
-            ->where('games.total_time', '=', DB::table('games')
-                ->where('board_id', 1)
-                ->min('total_time'))
+            ->orderBy('total_time')
             ->limit(1)
             ->get()
             ->map(function ($game) {
@@ -183,9 +181,7 @@ class ScoreboardController extends Controller
             ->where('games.board_id', 2)
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->select('users.nickname', 'games.total_time as best_time', 'games.ended_at')
-            ->where('games.total_time', '=', DB::table('games')
-                ->where('board_id', 2)
-                ->min('total_time'))
+            ->orderBy('total_time')
             ->limit(1)
             ->get()
             ->map(function ($game) {
@@ -199,9 +195,7 @@ class ScoreboardController extends Controller
             ->where('games.board_id', 3)
             ->join('users', 'games.created_user_id', '=', 'users.id')
             ->select('users.nickname', 'games.total_time as best_time', 'games.ended_at')
-            ->where('games.total_time', '=', DB::table('games')
-                ->where('board_id', 3)
-                ->min('total_time'))
+            ->orderBy('total_time')
             ->limit(1)
             ->get()
             ->map(function ($game) {
