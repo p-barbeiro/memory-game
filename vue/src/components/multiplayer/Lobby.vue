@@ -35,7 +35,7 @@ const addGame = async (board) => {
   }
   const gameID = await storeLobby.addGame(board)
   console.log('Game created with ID:', gameID)
-  storeTransaction.newTransaction({
+  storeTransaction.createTransaction({
     type: 'I',
     brain_coins: -5,
     description: `Multiplayer Game Created! -5 Brain Coins`,

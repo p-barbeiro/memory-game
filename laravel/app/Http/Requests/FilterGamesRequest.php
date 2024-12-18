@@ -23,9 +23,8 @@ class FilterGamesRequest extends FormRequest
     {
         return [
             "board" =>  "nullable|string|exists:boards,id",
-            "game_type" =>  "nullable|string|in:S,M",
-            "game_status" =>  "nullable|string|in:PE,PL,I,E",
-            "order_by"=>  "nullable|string|in:date,time,turns",
+            "type" =>  "nullable|string|in:S,M",
+            "status" =>  "nullable|string|in:PE,PL,I,E",
         ];
     }
 }

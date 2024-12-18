@@ -37,7 +37,7 @@
                 </div>
                 <div class="flex flex-col space-y-1.5">
                   <Label for="payment_reference">{{ payment_ref_txt }} <span class="text-red-600 text-sm">*</span></Label>
-                  <Input :disabled="payment_type === 'MB'" id="payment_reference" v-model="payment_ref" autofocus/>
+                  <Input :disabled="payment_type === 'MB'" id="payment_reference" v-model="payment_ref" autofocus />
                   <ErrorMessage :errorMessage="storeError.fieldMessage('payment_reference')"></ErrorMessage>
                 </div>
               </div>
@@ -88,7 +88,10 @@
             </CardContent>
           </div>
           <CardFooter>
-            <Button @click="handlePayment" class="w-full">Pay {{ props.amount }}€</Button>
+            <Button @click="handlePayment" class="w-full">
+              <IconLoading v-if="loading" class="h-5 w-5 mr-2" />
+              Pay {{ props.amount }}€</Button
+            >
           </CardFooter>
         </Card>
       </div>
@@ -108,11 +111,14 @@ import { useAuthStore } from '@/stores/auth'
 import { inject } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import IconLoading from '../icons/IconLoading.vue'
 
 const auth = useAuthStore()
 const storeError = useErrorStore()
 const alertDialog = inject('alertDialog')
 const router = useRouter()
+const loading = ref(false)
+
 const props = defineProps({
   amount: {
     type: Number,
@@ -151,11 +157,11 @@ const payment_ref_txt = computed(() => {
 })
 
 const handlePayment = async () => {
-  if(!payment_ref.value){
+  if (!payment_ref.value) {
     document.getElementById('payment_reference').focus()
     return
   }
-  
+  loading.value = true
   storeError.resetMessages()
   try {
     axios.defaults.headers.common.Authorization = 'Bearer ' + auth.token
@@ -170,11 +176,11 @@ const handlePayment = async () => {
     }
 
     const response = await axios.post(`transactions`, body)
-    console.log(response)
 
     if (response.status === 201) {
       const transaction = response.data.data
       if (await paymentGateway(payment_type.value, payment_ref.value, props.amount, transaction.id)) {
+        loading.value = false
         auth.user.brain_coins += transaction.brain_coins
         alertDialog.value.open(onSuccess, 'Payment Processing Successful', '', `Finish`, `Thank you for your payment. <br>You have successfully purchased ${props.amount * 10} Brain Coins.`)
       }

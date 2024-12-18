@@ -51,7 +51,7 @@ const newGame = async (boardID) => {
     if(props.board.price) {
       if (auth.user.brain_coins >= props.board.price){
         const responseGame = await game.newGame(boardID)
-        transaction.newTransaction({type: 'I',brain_coins: -props.board.price, game_id: responseGame.id,description: `Board ${props.board.columns}x${props.board.rows} unlocked! -${props.board.price} coins`})
+        transaction.createTransaction({type: 'I',brain_coins: -props.board.price, game_id: responseGame.id,description: `Board ${props.board.columns}x${props.board.rows} unlocked! -${props.board.price} coins`})
       }else{
         toast({
           title: `You don't have enough coins to play with this board.`,

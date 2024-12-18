@@ -93,7 +93,7 @@ export const useLobbyStore = defineStore('lobby', () => {
 
       const gameAPI = await storeGame.fetchGame(gameWS.game_id)
       const newGameOnDB = gameAPI
-      storeTransaction.newTransaction({
+      storeTransaction.createTransaction({
         type: 'I',
         brain_coins: -5,
         description: `Joined game #${gameWS.game_id}! -5 Brain Coins`,

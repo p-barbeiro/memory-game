@@ -23,7 +23,7 @@ class UserPolicy
 
     public function delete(User $authUser, User $user): bool
     {
-        return $authUser->id == $user->id && $authUser->type != 'A';
+        return $authUser->id == $user->id || $authUser->type == 'A';
     }
 
     public function toggleLock(User $authUser, User $user): bool

@@ -1,0 +1,16 @@
+meta {
+  name: Get Personal Statistics
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api_url}}/statistics/personal
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{token}}
+}

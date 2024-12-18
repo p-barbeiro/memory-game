@@ -36,50 +36,63 @@ const handleMessageFromInputDialog = (message) => {
   storeChat.sendPrivateMessageToUser(userDestination, message)
 }
 
-const autenticated = computed(() => auth.user)
+const toPlayer = computed(() => auth.isPlayer)
+const toAdmin = computed(() => auth.isAdmin)
+const toGuest = computed(() => !auth.user)
+const toGuestPlayer = computed(() => toPlayer.value || toGuest.value)
+
 
 const navigation = ref([
   {
+    name: 'Users',
+    link: 'allUsers',
+    visible: toAdmin
+  },
+  {
+    name: 'Transactions',
+    link: 'allTransactions',
+    visible: toAdmin
+  },
+  {
+    name: 'Boards',
+    link: 'allBoards',
+    visible: toAdmin
+  },
+  {
+    name: 'Games',
+    link: 'allGames',
+    visible: toAdmin
+  },
+  {
+    name: 'Statistics',
+    link: '',
+    visible: toAdmin
+  },
+  {
     name: 'Play',
     link: 'gamemode',
-    visible: true
+    visible: toGuestPlayer
   },
   {
     name: 'Game History',
     link: 'history',
-    visible: autenticated
+    visible: toPlayer
   },
   {
     name: 'Transactions',
     link: 'transactions',
-    visible: autenticated
+    visible: toPlayer
   },
   {
     name: 'Scoreboard',
     link: 'scoreboard',
-    visible: true
-  },
-  {
-    name: 'Testers',
-    dropdownList: [
-      {
-        name: 'Laravel',
-        link: 'laravelTester',
-        visible: true
-      },
-      {
-        name: 'WebSockets',
-        link: 'webSocketTester',
-        visible: true
-      }
-    ],
-    visible:true
+    visible: toGuestPlayer
   },
   {
     name: 'Store',
     link: 'store',
-    visible: autenticated
-  },
+    visible: toPlayer
+  }
 ])
 </script>
 

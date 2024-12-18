@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FilterUserRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
@@ -12,9 +13,48 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(FilterUserRequest $request)
     {
-        return UserResource::collection(User::paginate(20));
+        $query = User::query();
+
+        if ($request->has('search')) {
+            //logic and
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%')
+                    ->orWhere('nickname', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->has('blocked')) {
+            $query->where('blocked', $request->blocked);
+        }
+
+        // Sorting
+        $sortField = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $allowedSortFields = [
+            'id',
+            'name',
+            'email',
+            'nickname',
+            'brain_coins_balance',
+        ];
+
+        if (in_array($sortField, $allowedSortFields)) {
+            $query->orderBy($sortField, $sortDirection === 'asc' ? 'asc' : 'desc');
+        }
+
+        // Pagination
+        $perPage = $request->input('per_page', 20);
+        $users = $query->paginate($perPage);
+
+        return UserResource::collection($users);
     }
 
     public function show(User $user)

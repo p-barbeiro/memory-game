@@ -35,8 +35,6 @@ export const useBoardStore = defineStore('board', () => {
     const response = await axios.get('boards/' + boardID)
     const index = getBoardIndex(boardID)
     if (index > -1) {
-      // Instead of a direct assignment, object is cloned/copied to the array
-      // This ensures that the object in the array is not the same as the object fetched
       boards.value[index] = Object.assign({}, response.data.data)
     }
     return response.data.data

@@ -12,6 +12,65 @@ use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
+    public function index(FilterGamesRequest $request)
+    {
+        $query = Game::query()->with(['creator', 'multiplayerGamesPlayed']);
+
+        if ($request->user()->type == 'P') {
+            // If the user is a player, only show games created by the user or where the player is opponent logid AND
+            $query->where(function ($query) use ($request) {
+                $query->where('created_user_id', $request->user()->id)
+                    ->orWhereHas('multiplayerGamesPlayed', function ($q) use ($request) {
+                        $q->where('user_id', $request->user()->id);
+                    });
+            });
+        }
+
+        if ($request->has('search')) {
+            $query->whereHas('creator', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%')
+                    ->orWhere('nickname', 'like', '%' . $request->search . '%');
+            });
+
+        }
+
+        if ($request->has('board')) {
+            $query->where('board_id', $request->board);
+        }
+
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Sorting
+        $sortField = $request->input('sort_by', 'id');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $allowedSortFields = [
+            'id',
+            'began_at',
+            'total_time',
+            'total_turns_winner',
+        ];
+
+        if (in_array($sortField, $allowedSortFields)) {
+            $query->orderBy($sortField, $sortDirection === 'asc' ? 'asc' : 'desc');
+        }
+
+        // Pagination
+        $perPage = $request->input('per_page', 20);
+        $games = $query->paginate($perPage);
+
+        return GameResource::collection($games);
+
+    }
+
+
     /**
      * Create a new game.
      */
@@ -48,6 +107,11 @@ class GameController extends Controller
         $game->ended_at = ($game->status == "E" || $game->status == "I") ? Carbon::now() : null;
         $game->save();
 
+        return new GameResource($game);
+    }
+
+    public function show(Game $game)
+    {
         return new GameResource($game);
     }
 

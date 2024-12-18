@@ -171,15 +171,19 @@ export const useAuthStore = defineStore('auth', () => {
     return false
   }
 
-  const register = async (credentials) => {
+  const register = async (credentials, type = undefined) => {
     storeError.resetMessages()
     try {
+      if (type) {
+        credentials.type = type
+      }
+
       axios.defaults.headers.common['Content-Type'] = 'multipart/form-data'
       const response = await axios.post('auth/register', credentials)
       if (response.status !== 201) {
         throw response
       }
-      router.push({ name: 'registerSuccess' })
+      if (!type) router.push({ name: 'registerSuccess' })
       return true
     } catch (e) {
       storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Registration Failed!')

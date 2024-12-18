@@ -14,13 +14,28 @@ export const badgeVariants = cva(
         indigo:
           'bg-indigo-200 text-indigo-700',
         yellow:
-          'bg-yellow-200 text-yellow-500',
+          'bg-yellow-200 text-yellow-800',
         red:
           'bg-red-100 text-red-500',
         green:
-          'bg-green-200 text-green-500',
+          'bg-green-200 text-green-800',
         blue:
-          'bg-blue-200 text-blue-500',
+          'bg-blue-200 text-blue-800',
+        // Outline Variants
+        'default-outline':
+          'border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 bg-transparent',
+        'gray-outline':
+          'border border-gray-400 text-gray-600 bg-transparent',
+        'indigo-outline':
+          'border border-indigo-500 text-indigo-700 bg-transparent',
+        'yellow-outline':
+          'border border-yellow-500 text-yellow-800 bg-transparent',
+        'red-outline':
+          'border border-red-500 text-red-500 bg-transparent',
+        'green-outline':
+          'border border-green-500 text-green-800 bg-transparent',
+        'blue-outline':
+          'border border-blue-500 text-blue-800 bg-transparent',
       },
     },
     defaultVariants: {

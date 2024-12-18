@@ -17,6 +17,11 @@ import Scoreboard from '@/components/scoreboards/Scoreboard.vue'
 import Store from '@/components/store/Store.vue'
 import Checkout from '@/components/store/Checkout.vue'
 import Lobby from '@/components/multiplayer/Lobby.vue'
+import Users from '@/components/users/Users.vue'
+import User from '@/components/users/User.vue'
+import RegisterAdmin from '@/components/auth/RegisterAdmin.vue'
+import Boards from '@/components/board/Boards.vue'
+import Games from '@/components/multiplayer/Games.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -149,27 +154,63 @@ const router = createRouter({
         title: 'Scoreboard'
       }
     },
-    //testers
+    //administration
     {
-      path: '/testers',
-      children: [
-        {
-          path: 'laravel',
-          component: LaravelTester,
-          name: 'laravelTester',
-          meta: {
-            title: 'Laravel Tester'
-          }
-        },
-        {
-          path: 'websocket',
-          component: WebSocketTester,
-          name: 'webSocketTester',
-          meta: {
-            title: 'WebSocket Tester'
-          }
-        }
-      ]
+      path: '/users',
+      component: Users,
+      name: 'allUsers',
+      meta: {
+        title: 'All Users'
+      }
+    },
+    {
+      path: '/users/:id',
+      component: User,
+      name: 'user',
+      props: (route) => ({ id: parseInt(route.params.id) }),
+      meta: {
+        title: 'User Profile'
+      }
+    },
+    {
+      path: '/users/addAdmin',
+      component: RegisterAdmin,
+      name: 'registerAdmin',
+      meta: {
+        title: 'Administrator Registration'
+      }
+    },
+    {
+      path: '/transactions',
+      component: Transactions,
+      name: 'allTransactions',
+      meta: {
+        title: 'All Transactions'
+      }
+    },
+    {
+      path: '/games',
+      component: GameHistory,
+      name: 'allGames',
+      meta: {
+        title: 'All Games'
+      }
+    },
+    {
+      path: '/boards',
+      component: Boards,
+      name: 'allBoards',
+      meta: {
+        title: 'All Boards'
+      }
+    },
+    {
+      path: '/statistics',
+      component: WebSocketTester,
+      name: 'statistics',
+      meta: {
+        title: 'Summary and Statistics'
+      }
     }
   ]
 })
@@ -184,7 +225,7 @@ router.beforeEach(async (to, from, next) => {
     await storeAuth.restoreToken()
   }
 
-  //authenticated users can't acess this pages
+  //after authentication, users can't access this pages
   const authPagesDisable = ['login', 'register', 'registerSuccess']
   if (authPagesDisable.includes(to.name) && storeAuth.user) {
     next({ name: 'home' })
@@ -193,7 +234,7 @@ router.beforeEach(async (to, from, next) => {
 
   //guest users can't acess this pages
   const guestPagesDisable = ['profile', 'history', 'history', 'transactions', 'store', 'lobby', 'checkout']
-  if (guestPagesDisable.includes(to.name) && !storeAuth.user) {
+  if (guestPagesDisable.includes(to.name) && storeAuth.isGuest) {
     next({ name: 'home' })
     return
   }

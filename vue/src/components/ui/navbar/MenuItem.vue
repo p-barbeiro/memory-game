@@ -15,7 +15,7 @@
     </span>
   </li>
   <RouterLink v-else :to="{ name: link }">
-    <li class="hover:text-indigo-900 cursor-pointer h-full flex items-center text-sm text-gry-800 tracking-normal mx-2">
+    <li class="hover:text-indigo-900 hover:font-bold cursor-pointer h-full flex items-center text-sm text-gry-800 tracking-normal mx-2">
       {{ name }}
     </li>
   </RouterLink>

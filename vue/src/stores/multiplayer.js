@@ -116,15 +116,16 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     }
 
     if (playerNumberOfCurrentUser(game) === 1) {
-      const APIresponse = await gameStore.updateGame(game.id, { status: 'E', winner_user_id: winner })
+      const APIresponse = await gameStore.updateGame(game.id, { status: 'E', winner_user_id: winner() })
       const updatedGameOnDB = APIresponse
       console.log('Game has ended and updated on the database: ', updatedGameOnDB)
     }
 
     // If the game is ended and the player is the winner, add 7 Brain Coins
     if (game.gameStatus === 1 || game.gameStatus === 2) {
-      if (winner === auth.userID) {
-        storeTransaction.newTransaction({
+      console.log('YOU WIN')
+      if (winner() === auth.userID) {
+        storeTransaction.createTransaction({
           type: 'B',
           brain_coins: 7,
           description: `Won game #${game.id}! +7 Brain Coins`
