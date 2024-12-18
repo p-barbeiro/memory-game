@@ -13,7 +13,7 @@ export const useGameStore = defineStore('game', () => {
 
   const { toast } = useToast()
 
-  const games = ref([])
+  const games = ref(null)
   const totalGames = ref(0)
   const page = ref(1)
   const filters = ref({
@@ -219,10 +219,11 @@ export const useGameStore = defineStore('game', () => {
       axios.defaults.headers.common['Content-Type'] = 'application/json'
 
       const response = await axios.get('games/' + gameID)
-      const index = getGameIndex(gameID)
-      if (index > -1) {
-        games.value[index] = Object.assign({}, response.data.data)
-      }
+//      const index = getGameIndex(gameID)
+      console.log('FETCH GAME', response)
+      // if (index > -1) {
+      //   games.value[index] = Object.assign({}, response.data.data)
+      // }
       return response.data.data
     } catch (e) {
       storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching game!')
