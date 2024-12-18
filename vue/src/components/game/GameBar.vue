@@ -40,7 +40,7 @@ const props = defineProps({
   time: Number,
   pairs: Object,
   board: Object,
-  highscore: String,
+  highscore: Number,
   gameid: Number
 })
 
@@ -63,7 +63,7 @@ const cancelConfirmed = () => {
 }
 
 onBeforeRouteLeave((to, from, next) => {
-  if (props.time > 0 && !exitByCancel.value) {
+  if (!exitByCancel.value) {
     showConfirmationDialog('Cancel confirmation?', 'Are you sure you want to cancel the game?', 'Cancel', 'Yes, I want to cancel').then((confirmed) => {
       if (confirmed) {
         if(auth.user){

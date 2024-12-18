@@ -43,23 +43,23 @@
               </TableRow>
               <TableRow v-if="currentGame.opponent_user_id">
                 <TableHead>Opponent</TableHead>
-                <TableCell class="flex flex-row items-center gap-3 hover:underline cursor-pointer" @click="router.push({ name: 'user', params: { id: currentGame.opponent_user_id.id } })">
+                <TableCell class="flex flex-row items-center gap-3">
                   <img :src="storeAuth.getPhotoURL(currentGame.opponent_user_id?.photoFileName)" class="h-10 w-10 rounded-full" />
                   {{ currentGame.opponent_user_id?.name ?? 'Unknown Player' }}
                 </TableCell>
               </TableRow>
               <TableRow v-if="currentGame.created_user_id && (currentGame.type=='Multiplayer' || storeAuth.isAdmin) ">
                 <TableHead>Created by</TableHead>
-                <TableCell class="flex flex-row items-center gap-3 hover:underline cursor-pointer" @click="router.push({ name: 'user', params: { id: currentGame.created_user_id.id } })">
+                <TableCell class="flex flex-row items-center gap-3">
                   <img :src="storeAuth.getPhotoURL(currentGame.created_user_id?.photoFileName)" class="h-10 w-10 rounded-full" />
                   {{ currentGame.created_user_id?.name }}
                 </TableCell>
               </TableRow>
               <TableRow v-if="currentGame.winner_user_id">
                 <TableHead>Winner</TableHead>
-                <TableCell class="flex flex-row items-center gap-3 hover:underline cursor-pointer" @click="router.push({ name: 'user', params: { id: currentGame.created_user_id.id } })">
-                  <img :src="storeAuth.getPhotoURL(currentGame.created_user_id?.photoFileName)" class="h-10 w-10 rounded-full" />
-                  {{ currentGame.created_user_id?.name }}
+                <TableCell class="flex flex-row items-center gap-3">
+                  <img :src="storeAuth.getPhotoURL(currentGame.winner_user_id?.photoFileName)" class="h-10 w-10 rounded-full" />
+                  {{ currentGame.winner_user_id?.name }}
                 </TableCell>
               </TableRow>
               <TableRow v-if="currentGame.board.name">
@@ -68,7 +68,7 @@
               </TableRow>
               <TableRow v-if="currentGame.total_time">
                 <TableHead>Total Time</TableHead>
-                <TableCell>{{ currentGame.total_time }}</TableCell>
+                <TableCell>{{ currentGame.total_time }} s</TableCell>
               </TableRow>
               <TableRow v-if="currentGame.turns">
                 <TableHead>Turns</TableHead>

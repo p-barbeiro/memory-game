@@ -9,6 +9,6 @@
 import IconHighscore from '@/components/icons/IconHighscore.vue';
 
 const props = defineProps({
-  value: String
+  value: Number
 })
 </script>

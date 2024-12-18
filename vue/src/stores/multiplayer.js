@@ -104,27 +104,22 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     updateGame(game)
     console.log('Game ended: ', game)
     // Player that created the game is responsible for updating on the database
-    const winner = () => {
-      switch (game.gameStatus) {
-        case 1:
-          return game.player1.id
-        case 2:
-          return game.player2.id
-        default:
-          return null
-      }
-    }
+    console.log('Player 1: ', game.player1.id)
+    console.log('Player 2: ', game.player2.id)
+    console.log('Game Status: ', game.gameStatus);
+    const winner = game.gameStatus === 1 ? game.player1.id : game.gameStatus === 2 ? game.player2.id : null
+    console.log('Winner: ', winner)
 
     if (playerNumberOfCurrentUser(game) === 1) {
-      const APIresponse = await gameStore.updateGame(game.id, { status: 'E', winner_user_id: winner() })
+      const APIresponse = await gameStore.updateGame(game.id, { status: 'E', winner_user_id: winner, total_turns_winner: game.gameStatus === 1 ? game.player1_pairs : game.gameStatus === 1 ? game.player2_pairs : null, mp_finished: 1})
       const updatedGameOnDB = APIresponse
       console.log('Game has ended and updated on the database: ', updatedGameOnDB)
     }
 
     // If the game is ended and the player is the winner, add 7 Brain Coins
     if (game.gameStatus === 1 || game.gameStatus === 2) {
-      console.log('YOU WIN')
-      if (winner() === auth.userID) {
+      if (winner === auth.userID) {
+        console.log('YOU WIN')
         storeTransaction.createTransaction({
           type: 'B',
           brain_coins: 7,
@@ -139,6 +134,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
       player_won: winner === auth.userID ? 1 : 0,
       pairs_discovered: game.player1.id === auth.userID ? game.player1_pairs : game.player2_pairs
     }
+    console.log('Updating multiplayer game: ', multiplayerID, body)
     const mpResponse = await axios.patch('games/multiplayer/' + multiplayerID, body)
     console.log('Multiplayer game updated: ', mpResponse.data.data)
   })
@@ -189,7 +185,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     })
     const APIresponse = await axios.patch('games/' + game.id, {
       status: 'I',
-      winner_user_id: game.gameStatus === 1 ? game.player1_id : game.gameStatus === 2 ? game.player2_id : null
+      winner_user_id: game.gameStatus === 1 ? game.player1.id : game.gameStatus === 2 ? game.player2.id : null
     })
     const updatedGameOnDB = APIresponse.data.data
     console.log('Game was interrupted and updated on the database: ', updatedGameOnDB)

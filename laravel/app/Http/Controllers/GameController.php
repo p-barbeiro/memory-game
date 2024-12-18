@@ -105,6 +105,9 @@ class GameController extends Controller
             $game->status = $request->status;
         }
         $game->ended_at = ($game->status == "E" || $game->status == "I") ? Carbon::now() : null;
+        if ($request->has('mp_finished') && in_array($request->mp_finished, [1, 0])) {
+            $game->total_time = Carbon::parse($game->began_at)->diffInSeconds($game->ended_at);
+        }
         $game->save();
 
         return new GameResource($game);

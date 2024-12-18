@@ -19,7 +19,7 @@
       </div>
     </div>
     <div v-else class="flex flex-col justify-center items-center h-full">
-      <GameBar v-show="!finished" :time="time" :pairs="{ totalPairs, pairsFound }" :board="board" :highscore="highscore" :gameid="props.gameid" />
+      <GameBar v-show="!finished" :time="time" :pairs="{ totalPairs, pairsFound }" :board="board" :highscore="parseFloat(highscore)" :gameid="props.gameid" />
       <GameChest :board="board" :cards="cards" @card-click="handleFlip" />
     </div>
   </div>
@@ -178,7 +178,8 @@ const fetchHighscore = async () => {
   storeError.resetMessages()
   try {
     axios.defaults.headers.common.Authorization = 'Bearer ' + auth.token
-    const url = `/users/${auth.user.id}/games?game_type=S&order_by=time&game_status=E`
+    
+    const url = `games?page=1&type=S&status=E&board=${board.value.id}&sort_by=total_time&sort_direction=asc`
     const response = await axios.get(url)
     highscore.value = response.data?.data[0]?.total_time ?? 0
   } catch (e) {
