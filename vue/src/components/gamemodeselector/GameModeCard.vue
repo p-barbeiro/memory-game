@@ -38,7 +38,7 @@ const props = defineProps({
   img: String
 })
 
-const link = `/src/assets/img/${props.img}.jpg`
+const link = `/${props.img}.jpg`
 const router = useRouter()
 const auth = useAuthStore()
 const storeMultiplayer = useMultiplayerStore()

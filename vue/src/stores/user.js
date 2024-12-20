@@ -105,26 +105,20 @@ export const useUserStore = defineStore('user', () => {
     return users.value.find((p) => p.id === id)
   }
 
-  //local
-  // const getPhotoURL = (photoFileName) => {
-  //   if (photoFileName) {
-  //     return axios.defaults.baseURL.replaceAll('/api', photoFileName)
-  //   }
-  //   return avatarNoneAssetURL
-  // }
-
-  //remote
   const getPhotoURL = (photoFileName) => {
     if (photoFileName) {
-      let occurrence = 0;
+      if (import.meta.env.DEV) {
+        return axios.defaults.baseURL.replaceAll('/api', photoFileName)
+      }
+      let occurrence = 0
       return axios.defaults.baseURL.replace(/\/api/g, (match) => {
-        occurrence++;
-        return occurrence === 2 ? photoFileName : match;
-      });
+        occurrence++
+        return occurrence === 2 ? photoFileName : match
+      })
     }
-    return avatarNoneAssetURL;
-  };
-  
+    return avatarNoneAssetURL
+  }
+
   const updatePhoto = async (id, credentials) => {
     storeError.resetMessages()
     try {

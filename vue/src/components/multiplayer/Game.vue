@@ -97,13 +97,12 @@ import IconLoading from '@/components/icons/IconLoading.vue'
 import { Card } from '@/components/ui/card'
 import { useAuthStore } from '@/stores/auth'
 import { useMultiplayerStore } from '@/stores/multiplayer'
+import { X } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 import GameChest from '../game/GameChest.vue'
 import IconPairs from '../icons/IconPairs.vue'
 import Button from '../ui/button/Button.vue'
 import { useToast } from '../ui/toast'
-import Code from '@/lib/Code.vue'
-import { X } from 'lucide-vue-next'
 
 const quitIsOpen = ref(false)
 const { toast } = useToast()
@@ -133,7 +132,7 @@ const cards = computed(() => {
   return props.game.cards.map((card) => {
     return {
       ...card,
-      image: `/src/assets/decks/deck4/${card.id}.svg`
+      image: `/decks/deck4/${card.id}.svg`
     }
   })
 })

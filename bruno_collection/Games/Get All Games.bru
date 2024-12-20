@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{api_url}}/games
+  url: {{api_url}}/games?type=M&page=5
   body: none
   auth: none
 }
 
 params:query {
-  ~game_type: S
-  ~page: 1
+  type: M
+  page: 5
 }
 
 headers {

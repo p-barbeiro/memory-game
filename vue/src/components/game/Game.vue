@@ -93,7 +93,7 @@ const deck = 'deck4'
 
 const fillDeck = () => {
   for (let i = 1; i <= totalPairs.value; i++) {
-    images.push(`/src/assets/decks/${deck}/${i}.svg`)
+    images.push(`/decks/${deck}/${i}.svg`)
   }
 }
 const generateCards = () => {
@@ -105,7 +105,7 @@ const generateCards = () => {
 const buildDeck = () => {
   fillDeck()
   generateCards()
-  // cards.value = cards.value.sort(() => Math.random() - 0.5)
+  cards.value = cards.value.sort(() => Math.random() - 0.5)
 }
 
 //game
@@ -143,6 +143,7 @@ const handleFlip = (card) => {
 }
 
 const checkMatch = () => {
+ 
   const [card1, card2] = flippedCards.value
   if (card1.id === card2.id) {
     card1.matched = true
@@ -156,6 +157,7 @@ const checkMatch = () => {
     return true // Cards match
   }
   return false // Cards do not match
+  
 }
 
 const gameFinished = () => {

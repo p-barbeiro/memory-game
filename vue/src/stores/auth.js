@@ -46,6 +46,9 @@ export const useAuthStore = defineStore('auth', () => {
   const userPhotoUrl = computed(() => {
     const photoFile = user.value ? (user.value.photoFileName ?? '') : ''
     if (photoFile) {
+      if (import.meta.env.DEV) {
+        return axios.defaults.baseURL.replaceAll('/api', photoFile)
+      }
       let occurrence = 0
       return axios.defaults.baseURL.replace(/\/api/g, (match) => {
         occurrence++
@@ -55,27 +58,11 @@ export const useAuthStore = defineStore('auth', () => {
     return avatarNoneAssetURL
   })
 
-  //localhost
-
-  // const userPhotoUrl = computed(() => {
-  //   const photoFile = user.value ? (user.value.photoFileName ?? '') : ''
-  //   if (photoFile) {
-  //     return axios.defaults.baseURL.replaceAll('/api', photoFile)
-  //   }
-  //   return avatarNoneAssetURL
-  // })
-
-  //localhost
-  // const getPhotoURL = (photoFileName) => {
-  //   if (photoFileName) {
-  //     return axios.defaults.baseURL.replaceAll('/api', photoFileName)
-  //   }
-  //   return avatarNoneAssetURL
-  // }
-
-  //remote
   const getPhotoURL = (photoFileName) => {
     if (photoFileName) {
+      if (import.meta.env.DEV) {
+        return axios.defaults.baseURL.replaceAll('/api', photoFileName)
+      }
       let occurrence = 0
       return axios.defaults.baseURL.replace(/\/api/g, (match) => {
         occurrence++

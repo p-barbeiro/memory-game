@@ -1,11 +1,11 @@
 <template>
-  <div class="border rounded-xl bg-gradient-to-t from-indigo-800/50 via-indigo-800/20 to-opacity-100">
-    <div class="select-none relative group h-52 my-3 place-items-center overflow-clip">
+  <div class="border rounded-xl border-indigo-200 bg-indigo-50">
+    <div class="select-none relative group h-32 my-3 place-items-center overflow-clip">
       <img class="object-cover object-center h-full" :src="img" alt="Coins Image" />
     </div>
-    <div class="bg-indigo-50 mx-3 p-3 min-h-40 flex flex-col justify-around border rounded-md mb-3">
-      <p v-if="!custom" class="font-normal text-xl text-gray-800 text-center h-10">{{ amount }} Brain Coins</p>
-      <NumberFieldRoot v-if="custom" id="age" :min="10" :step="10" v-model:modelValue="customTotal" class="mb-2">
+    <div class="bg-slate-50 border-indigo-200 mx-3 p-2 min-h-36 flex flex-col justify-around border rounded-lg mb-3 gap-3">
+      <p v-if="!custom" class="font-normal text-lg text-indigo-900 text-center items-center flex justify-center">{{ amount }} Brain Coins</p>
+      <NumberFieldRoot v-if="custom" id="age" :min="10" :step="10" v-model:modelValue="customTotal">
         <div class="flex w-full justify-center items-center h-10">
           <NumberFieldDecrement class="p-2 disabled:opacity-20 rounded-l bg-slate-50 h-full w-10 border hover:bg-slate-200">-</NumberFieldDecrement>
           <NumberFieldInput class="text-sm w-full border-y place-items-end pr-1.5 h-full bg-white focus:outline-none" />
@@ -13,8 +13,8 @@
           <NumberFieldIncrement class="p-2 disabled:opacity-50 rounded-r bg-slate-50 h-full w-10 border hover:bg-slate-200">+</NumberFieldIncrement>
         </div>
       </NumberFieldRoot>
-      <p class="font-semibold text-xl text-gray-800 text-center">{{ total + '€' }}</p>
-      <Button class="w-full mt-3" @click="router.push({ name: 'checkout', params: {amount: total} })">Buy</Button>
+      <p class="font-semibold text-base text-indigo-950 text-center">{{ total + '€' }}</p>
+      <Button class="w-full" @click="router.push({ name: 'checkout', params: { amount: total } })">Buy</Button>
     </div>
   </div>
 </template>
@@ -42,7 +42,7 @@ const props = defineProps({
   }
 })
 
-const customTotal = ref(50)
+const customTotal = ref(150)
 
 const total = computed(() => {
   return props.amount ? props.amount / 10 : customTotal.value / 10

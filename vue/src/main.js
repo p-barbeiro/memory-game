@@ -13,8 +13,10 @@ import ErrorMessage from './components/common/ErrorMessage.vue'
 
 
 const app = createApp(App)
+
 const apiDomain = import.meta.env.VITE_API_DOMAIN
 console.log('api domain', apiDomain)
+
 const wsConnection = import.meta.env.VITE_WS_CONNECTION
 console.log('ws connection', wsConnection)
 

@@ -56,10 +56,8 @@ const cancelConfirmed = () => {
   exitByCancel.value = true
   if(auth.user){
     game.cancelGame(props.gameid)
-  }else{
-    router.back()
   }
-  
+  router.back()
 }
 
 onBeforeRouteLeave((to, from, next) => {
