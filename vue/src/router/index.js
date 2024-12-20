@@ -22,6 +22,7 @@ import User from '@/components/users/User.vue'
 import RegisterAdmin from '@/components/auth/RegisterAdmin.vue'
 import Boards from '@/components/board/Boards.vue'
 import Games from '@/components/multiplayer/Games.vue'
+import Statistics from '@/components/statistics/Statistics.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -206,7 +207,7 @@ const router = createRouter({
     },
     {
       path: '/statistics',
-      component: WebSocketTester,
+      component: Statistics,
       name: 'statistics',
       meta: {
         title: 'Summary and Statistics'

@@ -1,13 +1,16 @@
 <template>
-  <div class="place-self-start w-full">
+  <div v-if="isLoading" class="place-self-center">
+    <IconLoading size="32"/>
+  </div>
+  <div v-else class="place-self-start w-full">
     <div class="rounded-full flex justify-center mb-3">
-      <button class="border border-collapse rounded-l-full w-52 text-sm p-2 hover:bg-indigo-100" :class="{ 'bg-indigo-100 text-indigo-950 border-indigo-200': toggle }" @click="toggle = 1">Personal Scoreboard</button>
-      <button class="border border-collapse rounded-r-full text-sm w-52 p-2 hover:bg-indigo-100" :class="{ 'bg-indigo-100 text-indigo-950 border-indigo-200': !toggle }" @click="toggle = 0">Global Scoreboard</button>
+      <button v-if="storeAuth.isPlayer" class="border border-collapse rounded-l-full w-52 text-sm p-2 hover:bg-indigo-100" :class="{ 'bg-indigo-100 text-indigo-950 border-indigo-200': toggle }" @click="toggle = 1">Personal Scoreboard</button>
+      <button class="border border-collapse  text-sm w-52 p-2" :class="{ 'bg-indigo-100 text-indigo-950 border-indigo-200': !toggle, ' text-indigo-950 border-indigo-200 rounded-r-full hover:bg-indigo-100'  : storeAuth.isPlayer, 'border-indigo-200 rounded-full bg-indigo-100': !storeAuth.isPlayer }" @click="toggle = 0">Global Scoreboard</button>
     </div>
     <hr class="my-5" />
 
     <div class="w-full flex justify-center">
-      <div v-if="toggle" class="w-full">
+      <div v-if="toggle && storeAuth.isPlayer" class="w-full">
         <span class="flex justify-center font-semibold"> Single-Player Scoreboard </span>
         <hr class="my-5" />
 
@@ -134,7 +137,7 @@
               <TableBody>
                 <TableRow>
                   <TableHead class="w-1/2 text-right">User</TableHead>
-                  <TableCell class="w-1/2 text-left"> 
+                  <TableCell class="w-1/2 text-left">
                     <div class="flex items-center gap-2">
                       <img :src="storeAuth.getPhotoURL(board.user.photoFileName)" class="w-10 h-10 rounded-full" />
                       <span class="font-semibold">{{ board.user.nickname }}</span>
@@ -192,8 +195,9 @@
 import { useAuthStore } from '@/stores/auth'
 import { useErrorStore } from '@/stores/error'
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import IconLoading from '../icons/IconLoading.vue'
 
 const storeError = useErrorStore()
 const storeAuth = useAuthStore()
@@ -219,7 +223,7 @@ const fetchPersonalHighscore = async () => {
     personalScoreboard.value = response.data
     isLoading.value = false
   } catch (e) {
-    storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching game!')
+    storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching personal Scoreboard!')
     isLoading.value = false
     return false
   }
@@ -240,14 +244,14 @@ const fetchGlobalHighscore = async () => {
     globalScoreboard.value = response.data
     isLoading.value = false
   } catch (e) {
-    storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching game!')
+    storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching global scoreboards!')
     isLoading.value = false
     return false
   }
 }
 
 onMounted(async () => {
-  await fetchPersonalHighscore()
+  if (storeAuth.isPlayer) await fetchPersonalHighscore()
   await fetchGlobalHighscore()
 })
 </script>

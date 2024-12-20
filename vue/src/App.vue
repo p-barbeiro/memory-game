@@ -64,11 +64,6 @@ const navigation = ref([
     visible: toAdmin
   },
   {
-    name: 'Statistics',
-    link: '',
-    visible: toAdmin
-  },
-  {
     name: 'Play',
     link: 'gamemode',
     visible: toGuestPlayer
@@ -86,13 +81,18 @@ const navigation = ref([
   {
     name: 'Scoreboard',
     link: 'scoreboard',
-    visible: toGuestPlayer
+    visible: true
   },
   {
     name: 'Store',
     link: 'store',
     visible: toPlayer
-  }
+  },
+  {
+    name: 'Statistics',
+    link: 'statistics',
+    visible: true
+  },
 ])
 </script>
 

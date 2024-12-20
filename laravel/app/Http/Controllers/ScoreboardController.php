@@ -190,7 +190,7 @@ class ScoreboardController extends Controller
             if( $singlePlayerBestTime3x4) {
                 $singlePlayerBestTime3x4->user = new UserResource(User::find($singlePlayerBestTime3x4->id));
             }
-            
+
             $singlePlayerBestTime4x4 = Game::query()
                 ->where('status', 'E')
                 ->where('games.type', 'S')
