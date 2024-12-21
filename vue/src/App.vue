@@ -41,7 +41,6 @@ const toAdmin = computed(() => auth.isAdmin)
 const toGuest = computed(() => !auth.user)
 const toGuestPlayer = computed(() => toPlayer.value || toGuest.value)
 
-
 const navigation = ref([
   {
     name: 'Users',
@@ -90,9 +89,19 @@ const navigation = ref([
   },
   {
     name: 'Statistics',
-    link: 'statistics',
-    visible: true
+    link: 'personalStatistics',
+    visible: toPlayer
   },
+  {
+    name: 'Statistics',
+    link: 'adminStatistics',
+    visible: toAdmin
+  },
+  {
+    name: 'About Us',
+    link: 'globalStatistics',
+    visible: true
+  }
 ])
 </script>
 

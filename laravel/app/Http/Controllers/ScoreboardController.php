@@ -15,7 +15,7 @@ class ScoreboardController extends Controller
     /**
      * Returns the user's scoreboard.
      */
-    public function personal_scoreboard(Request $request): JsonResponse
+    public function personalScoreboard(Request $request): JsonResponse
     {
         $user_id = $request->user()->id;
 
@@ -176,7 +176,7 @@ class ScoreboardController extends Controller
     /**
      * Returns the global scoreboard.
      */
-    public function global_scoreboard(Request $request): JsonResponse
+    public function globalScoreboard(Request $request): JsonResponse
     {
         try {
             $singlePlayerBestTime3x4 = Game::query()
@@ -184,72 +184,60 @@ class ScoreboardController extends Controller
                 ->where('games.type', 'S')
                 ->where('games.board_id', 1)
                 ->join('users', 'games.created_user_id', '=', 'users.id')
-                ->select('users.id', 'games.total_time as best_time', 'games.ended_at')
+                ->select('users.name', 'users.photo_filename', 'users.nickname', 'games.total_time as best_time', 'games.ended_at')
                 ->orderBy('total_time')
                 ->first();
-            if( $singlePlayerBestTime3x4) {
-                $singlePlayerBestTime3x4->user = new UserResource(User::find($singlePlayerBestTime3x4->id));
-            }
+
 
             $singlePlayerBestTime4x4 = Game::query()
                 ->where('status', 'E')
                 ->where('games.type', 'S')
                 ->where('games.board_id', 2)
                 ->join('users', 'games.created_user_id', '=', 'users.id')
-                ->select('users.id', 'games.total_time as best_time', 'games.ended_at')
+                ->select('users.name', 'users.photo_filename', 'users.nickname', 'games.total_time as best_time', 'games.ended_at')
                 ->orderBy('total_time')
                 ->first();
-            if($singlePlayerBestTime4x4) {
-                $singlePlayerBestTime4x4->user = new UserResource(User::find($singlePlayerBestTime4x4->id));
-            }
+
 
             $singlePlayerBestTime6x6 = Game::query()
                 ->where('status', 'E')
                 ->where('games.type', 'S')
                 ->where('games.board_id', 3)
                 ->join('users', 'games.created_user_id', '=', 'users.id')
-                ->select('users.id', 'games.total_time as best_time', 'games.ended_at')
+                ->select('users.name', 'users.photo_filename', 'users.nickname', 'games.total_time as best_time', 'games.ended_at')
                 ->orderBy('total_time')
                 ->first();
-            if($singlePlayerBestTime6x6) {
-                $singlePlayerBestTime6x6->user = new UserResource(User::find($singlePlayerBestTime6x6->id));
-            }
+
 
             $singlePlayerMinTurns3x4 = Game::query()
                 ->where('status', 'E')
                 ->where('games.type', 'S')
                 ->where('games.board_id', 1)
                 ->join('users', 'games.created_user_id', '=', 'users.id')
-                ->selectRaw('MIN(total_turns_winner) as min_turns, users.id, games.ended_at')
+                ->selectRaw('MIN(total_turns_winner) as min_turns, users.name, users.photo_filename, users.nickname, games.ended_at')
                 ->groupBy('users.id', 'games.ended_at')
                 ->first();
-            if($singlePlayerMinTurns3x4) {
-                $singlePlayerMinTurns3x4->user = new UserResource(User::find($singlePlayerMinTurns3x4->id));
-            }
+
 
             $singlePlayerMinTurns4x4 = Game::query()
                 ->where('status', 'E')
                 ->where('games.type', 'S')
                 ->where('games.board_id', 2)
                 ->join('users', 'games.created_user_id', '=', 'users.id')
-                ->selectRaw('MIN(total_turns_winner) as min_turns, users.id, games.ended_at')
+                ->selectRaw('MIN(total_turns_winner) as min_turns, users.name, users.photo_filename, users.nickname, games.ended_at')
                 ->groupBy('users.id', 'games.ended_at')
                 ->first();
-            if ($singlePlayerMinTurns4x4) {
-                $singlePlayerMinTurns4x4->user = new UserResource(User::find($singlePlayerMinTurns4x4->id));
-            }
+
 
             $singlePlayerMinTurns6x6 = Game::query()
                 ->where('status', 'E')
                 ->where('games.type', 'S')
                 ->where('games.board_id', 3)
                 ->join('users', 'games.created_user_id', '=', 'users.id')
-                ->selectRaw('MIN(total_turns_winner) as min_turns, users.id, games.ended_at')
+                ->selectRaw('MIN(total_turns_winner) as min_turns, users.name, users.photo_filename, users.nickname, games.ended_at')
                 ->groupBy('users.id', 'games.ended_at')
                 ->first();
-            if ($singlePlayerMinTurns6x6) {
-                $singlePlayerMinTurns6x6->user = new UserResource(User::find($singlePlayerMinTurns6x6->id));
-            }
+
 
             $multiplayerTopPlayers = Game::query()
                 ->where('status', 'E') // Only completed games
@@ -257,7 +245,7 @@ class ScoreboardController extends Controller
                 ->join('multiplayer_games_played', 'games.id', '=', 'multiplayer_games_played.game_id')
                 ->join('users', 'multiplayer_games_played.user_id', '=', 'users.id')
                 ->select(
-                    'users.id',
+                    'users.id', "users.name", "users.photo_filename", "users.nickname",
                     DB::raw('SUM(CASE WHEN multiplayer_games_played.player_won = 1 THEN 1 ELSE 0 END) as total_victories'),
                     DB::raw('MAX(games.ended_at) as last_victory_date') // Earliest victory date
                 )
@@ -267,7 +255,6 @@ class ScoreboardController extends Controller
                 ->limit(5)
                 ->get()
                 ->map(function ($game) {
-                    $game->user = new UserResource(User::find($game->id));
                     $game->last_victory_date = Carbon::parse($game->last_victory_date)->format('d-m-Y H:i:s');
                     return $game;
                 });

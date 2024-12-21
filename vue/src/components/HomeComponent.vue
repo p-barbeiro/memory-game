@@ -6,7 +6,7 @@
         <h2>Unleash your mind's potential our with memory game!</h2>
         <h2><b>Challenge your focus</b>, <b>boost your memory</b>, and enjoy endless fun.</h2>
       </div>
-      <RouterLink :to="{ name: 'gamemode' }">
+      <RouterLink v-if="!storeAuth.isAdmin" :to="{ name: 'gamemode' }">
         <Button class="w-full text-xl xl:mt-8 py-6 mb-5">Let's Play</Button>
       </RouterLink>
     </div>
@@ -17,5 +17,8 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth';
 import Button from './ui/button/Button.vue'
+
+const storeAuth = useAuthStore()
 </script>

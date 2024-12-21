@@ -37,7 +37,7 @@ class TransactionController extends Controller
 
         $allowedSortFields = [
             'id',
-                'transaction_datetime',
+            'transaction_datetime',
             'brain_coins',
         ];
 
@@ -52,9 +52,6 @@ class TransactionController extends Controller
         return TransactionResource::collection($transactions);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(TransactionStoreRequest $request)
     {
         $transaction = new Transaction();
@@ -86,49 +83,6 @@ class TransactionController extends Controller
         $transaction->save();
 
         return new TransactionResource($transaction);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(FilterTransactionRequest $request, int $id)
-    {
-        $transactionsQuery = Transaction::query();
-
-        if ($id !== -1) {
-            $transactionsQuery->where('user_id', $id);
-        }
-
-        $filterByType = $request->validated('type');
-        if ($filterByType !== null) {
-            $transactionsQuery->where('type', $filterByType);
-        }
-
-        $orderBy = $request->validated('order_by');
-        if ($orderBy !== null) {
-            switch ($orderBy) {
-                case 'date':
-                    $transactionsQuery->orderBy('transaction_datetime', 'desc');
-                    break;
-                case 'coins':
-                    $transactionsQuery->orderBy('brain_coins', 'desc');
-                    break;
-            }
-        }
-
-        $transactions = $transactionsQuery
-            ->paginate(20)
-            ->withQueryString();
-
-        return TransactionResource::collection($transactions);
-    }
-
-    /**
-     * Display the transactions of the authenticated user.
-     */
-    public function user_transactions(FilterTransactionRequest $request)
-    {
-        return $this->show($request, $request->user()->id);
     }
 
     public function destroy(Transaction $transaction)

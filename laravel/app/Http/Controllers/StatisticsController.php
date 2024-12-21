@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FilterPersonalStatisticsRequest;
-use Illuminate\Http\Request;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
-use function Illuminate\Events\queueable;
 
 class StatisticsController extends Controller
 {
@@ -67,11 +66,10 @@ class StatisticsController extends Controller
             ->where('multiplayer_games_played.user_id', $userId)
             ->whereBetween('games.began_at', [$startDate, $endDate])
             ->whereNotNull('games.ended_at')
-            ->selectRaw("
-        COUNT(*) as total_games,
-        SUM(CASE WHEN games.winner_user_id = ? THEN 1 ELSE 0 END) as wins,
-        SUM(CASE WHEN games.winner_user_id != ? AND games.winner_user_id IS NOT NULL THEN 1 ELSE 0 END) as loses,
-        SUM(multiplayer_games_played.pairs_discovered) as total_pairs_discovered", [$userId, $userId])
+            ->selectRaw("COUNT(*) as total_games,
+                        SUM(CASE WHEN games.winner_user_id = ? THEN 1 ELSE 0 END) as wins,
+                        SUM(CASE WHEN games.winner_user_id != ? AND games.winner_user_id IS NOT NULL THEN 1 ELSE 0 END) as loses,
+                        SUM(multiplayer_games_played.pairs_discovered) as total_pairs_discovered", [$userId, $userId])
             ->first();
 
         $multiplayerByBoard = DB::table('multiplayer_games_played')
@@ -80,13 +78,12 @@ class StatisticsController extends Controller
             ->where('multiplayer_games_played.user_id', $userId)
             ->whereBetween('games.began_at', [$startDate, $endDate])
             ->whereNotNull('games.ended_at')
-            ->selectRaw("
-CONCAT(boards.board_cols, 'x', boards.board_rows) as board_size,
-COUNT(*) as total_games,
-AVG(multiplayer_games_played.pairs_discovered) as avg_pairs_discovered,
-SUM(multiplayer_games_played.pairs_discovered) as total_pairs_discovered,
-SUM(CASE WHEN games.winner_user_id = ? THEN 1 ELSE 0 END) as board_wins,
-SUM(CASE WHEN games.winner_user_id != ? AND games.winner_user_id IS NOT NULL THEN 1 ELSE 0 END) as borad_loses", [$userId, $userId])
+            ->selectRaw("CONCAT(boards.board_cols, 'x', boards.board_rows) as board_size,
+                                    COUNT(*) as total_games,
+                                    AVG(multiplayer_games_played.pairs_discovered) as avg_pairs_discovered,
+                                    SUM(multiplayer_games_played.pairs_discovered) as total_pairs_discovered,
+                                    SUM(CASE WHEN games.winner_user_id = ? THEN 1 ELSE 0 END) as board_wins,
+                                    SUM(CASE WHEN games.winner_user_id != ? AND games.winner_user_id IS NOT NULL THEN 1 ELSE 0 END) as borad_loses", [$userId, $userId])
             ->groupBy('boards.board_cols', 'boards.board_rows')
             ->orderBy('boards.board_cols')
             ->orderBy('boards.board_rows')
@@ -113,44 +110,67 @@ SUM(CASE WHEN games.winner_user_id != ? AND games.winner_user_id IS NOT NULL THE
         ];
 
         // === PURCHASES STATISTICS ===
-        $purchaseData = DB::table('transactions')
+        //how many transactions, average purchase, total spent, average spent per purchase type P,I,B
+        $purchases = DB::table('transactions')
             ->where('user_id', $userId)
-            ->where('type', 'P') // Purchase transactions
             ->whereBetween('transaction_datetime', [$startDate, $endDate])
             ->selectRaw("
-                COUNT(*) as total_purchases,
+                type,
+                COUNT(*) as total_transactions,
+                AVG(brain_coins) as avg_brain_coin,
+                SUM(brain_coins) as total_brain_coin,
                 AVG(euros) as avg_purchase,
-                SUM(euros) as total_spent
-            ")
-            ->first();
+                SUM(euros) as total_spent")
+            ->groupBy('type')
+            ->get();
 
-        $mostFrequentPurchase = DB::table('transactions')
-            ->where('user_id', $userId)
-            ->where('type', 'P')
-            ->whereBetween('transaction_datetime', [$startDate, $endDate])
-            ->selectRaw('euros, COUNT(*) as count')
-            ->groupBy('euros')
-            ->orderByDesc('count')
-            ->orderBy('euros')
-            ->first();
+        Transaction::count();
 
         $purchases = [
-            'totalPurchases' => $purchaseData->total_purchases ?? 0,
-            'averagePurchase' => $mostFrequentPurchase->euros ?? 0,
-            'totalSpent' => round($purchaseData->total_spent ?? 0, 2),
-            'averageSpent' => ($purchaseData->total_purchases ?? 0) > 0
-                ? round(($purchaseData->total_spent / $purchaseData->total_purchases), 2)
-                : 0,
-
+            'totalPurchases' => $purchases->sum('total_transactions'),
+            'totalSpent' => $purchases->sum('total_spent'),
+            'averagePurchase' => $purchases->avg('avg_purchase'),
+            'purchasesByType' => $purchases->mapWithKeys(function ($data) {
+                return [
+                    $data->type => [
+                        'totalBrainCoins' => $data->total_brain_coin,
+                        'averageBrainCoins' => $data->avg_brain_coin,
+                        'totalTransactions' => $data->total_transactions,
+                        'totalSpent' => $data->total_spent,
+                        'averagePurchase' => $data->avg_purchase,
+                    ]
+                ];
+            })
         ];
 
+//        $purchaseData = DB::table('transactions')
+//            ->where('user_id', $userId)
+//            ->whereBetween('transaction_datetime', [$startDate, $endDate])
+//            ->selectRaw("
+//                COUNT(*) as total_purchases,
+//                AVG(euros) as avg_purchase,
+//                SUM(euros) as total_spent")
+//            ->groupBy('type')
+//            ->first();
+//
+//        $mostFrequentPurchase = DB::table('transactions')
+//            ->where('user_id', $userId)
+//            ->where('type', 'P')
+//            ->whereBetween('transaction_datetime', [$startDate, $endDate])
+//            ->selectRaw('euros, COUNT(*) as count')
+//            ->groupBy('euros')
+//            ->orderByDesc('count')
+//            ->orderBy('euros')
+//            ->first();
+//
+//
         // === RESPONSE ===
         return response()->json([
             'games' => [
                 'singlePlayer' => $singlePlayer,
                 'multiPlayer' => $multiPlayer,
             ],
-            'purchases' => $purchases,
+            'transactions' => $purchases,
         ]);
     }
 
@@ -190,8 +210,7 @@ SUM(CASE WHEN games.winner_user_id != ? AND games.winner_user_id IS NOT NULL THE
 
     }
 
-    public
-    function adminStatistics()
+    public function adminStatistics()
     {
         $purchasesByDate = DB::table('transactions')
             ->where('type', 'P')

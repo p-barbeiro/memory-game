@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="flex justify-center items-center w-full h-full place-self-center">
-    <IconLoading size="32"></IconLoading>
+    <IconLoading :size="32"></IconLoading>
   </div>
   <div v-else class="flex flex-col justify-between w-full h-full" :class="{ 'border-[3px] border-indigo-800/50 rounded-xl shadow ': currentUserTurn }">
     <div v-if="gameEnded" class="top-0 left-0 z-10 flex justify-center items-center w-full h-full">

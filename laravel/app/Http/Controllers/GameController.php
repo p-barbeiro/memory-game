@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateGameRequest;
+use App\Http\Requests\GameStoreRequest;
 use App\Http\Requests\FilterGamesRequest;
 use App\Http\Requests\ScoreboardGamesRequest;
 use App\Http\Resources\GameResource;
@@ -70,11 +70,7 @@ class GameController extends Controller
 
     }
 
-
-    /**
-     * Create a new game.
-     */
-    public function store(CreateGameRequest $request)
+    public function store(GameStoreRequest $request)
     {
         $newGame = new Game();
 
@@ -94,9 +90,6 @@ class GameController extends Controller
         return new GameResource($newGame);
     }
 
-    /**
-     * Update the game.
-     */
     public function update(Request $request, Game $game)
     {
         $game->fill($request->all());
@@ -118,10 +111,7 @@ class GameController extends Controller
         return new GameResource($game);
     }
 
-    /**
-     * Start the game.
-     */
-    public function game_start(Game $game)
+    public function startGame(Game $game)
     {
         $game->began_at = Carbon::now();
         $game->status = 'PL';
@@ -130,10 +120,7 @@ class GameController extends Controller
         return new GameResource($game);
     }
 
-    /**
-     * Cancel the game.
-     */
-    public function cancel(Game $game)
+    public function cancelGame(Game $game)
     {
         $game->status = 'I';
         $game->ended_at = Carbon::now();

@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="place-self-center flex justify-center items-center w-full h-full">
-    <IconLoading size="32"></IconLoading>
+    <IconLoading :size="32"></IconLoading>
   </div>
   <div v-else class="flex flex-col w-full h-full justify-between">
     <div v-if="finished" class="absolute top-0 left-0 flex justify-center items-center w-full h-full z-10">

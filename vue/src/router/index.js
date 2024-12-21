@@ -23,6 +23,8 @@ import RegisterAdmin from '@/components/auth/RegisterAdmin.vue'
 import Boards from '@/components/board/Boards.vue'
 import Games from '@/components/multiplayer/Games.vue'
 import Statistics from '@/components/statistics/Statistics.vue'
+import PersonalStatistics from '@/components/statistics/PersonalStatistics.vue'
+import AdminStatistics from '@/components/statistics/AdminStatistics.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -206,9 +208,25 @@ const router = createRouter({
       }
     },
     {
-      path: '/statistics',
+      path: '/statistics/personal',
+      component: PersonalStatistics,
+      name: 'personalStatistics',
+      meta: {
+        title: 'Summary and Statistics'
+      }
+    },
+    {
+      path: '/statistics/global',
       component: Statistics,
-      name: 'statistics',
+      name: 'globalStatistics',
+      meta: {
+        title: 'Summary and Statistics'
+      }
+    },
+    {
+      path: '/statistics/admin',
+      component: AdminStatistics,
+      name: 'adminStatistics',
       meta: {
         title: 'Summary and Statistics'
       }
@@ -225,6 +243,13 @@ router.beforeEach(async (to, from, next) => {
     handlingFirstRoute = false
     await storeAuth.restoreToken()
   }
+  isLoading.value = false
+
+  const guestPagesDisable = ['profile', 'history', 'history', 'transactions', 'store', 'lobby', 'checkout', 'allUsers', 'user', 'registerAdmin', 'allTransactions', 'allGames', 'allBoards', 'personalStatistics', 'adminStatistics']
+  if (guestPagesDisable.includes(to.name) && !storeAuth.user) {
+    next({ name: 'home' })
+    return
+  }
 
   //after authentication, users can't access this pages
   const authPagesDisable = ['login', 'register', 'registerSuccess']
@@ -233,15 +258,21 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  //guest users can't acess this pages
-  const guestPagesDisable = ['profile', 'history', 'history', 'transactions', 'store', 'lobby', 'checkout']
-  if (guestPagesDisable.includes(to.name) && storeAuth.isGuest) {
+  //admin users can't acess this pages
+  const adminPagesDisable = ['gamemode', 'boardSelector', 'game', 'store', 'lobby', 'checkout','personalStatistics']
+  if (adminPagesDisable.includes(to.name) && storeAuth.isAdmin) {
+    next({ name: 'home' })
+    return
+  }
+
+  //players can't acess this pages
+  const playerPagesDisable = ['allUsers', 'user', 'registerAdmin', 'allTransactions', 'allGames', 'allBoards', 'adminStatistics']
+  if (playerPagesDisable.includes(to.name) && storeAuth.isPlayer) {
     next({ name: 'home' })
     return
   }
 
   next()
-  isLoading.value = false
 })
 
 export default router

@@ -107,7 +107,7 @@
                 </div>
               </TableHead>
               <TableHead>Time</TableHead>
-              <TableHead>User</TableHead>
+              <TableHead v-if="!storeAuth.isPlayer">User</TableHead>
               <TableHead>See more</TableHead>
             </TableRow>
           </TableHeader>
@@ -122,7 +122,7 @@
               <TableCell>{{ trans.brain_coins }}</TableCell>
               <TableCell>{{ trans.date }}</TableCell>
               <TableCell>{{ trans.time }}</TableCell>
-              <TableCell class="flex flex-row items-center gap-3">
+              <TableCell v-if="!storeAuth.isPlayer" class="flex flex-row items-center gap-3">
                 <img :src="storeAuth.getPhotoURL(trans.user?.photoFileName)" class="h-10 w-10 rounded-full" />
                 {{ trans.user?.name ?? 'Unknown Player' }} </TableCell>
               <TableCell>

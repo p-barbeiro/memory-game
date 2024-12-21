@@ -1,11 +1,11 @@
 <template>
   <div v-if="isLoading" class="place-self-center">
-    <IconLoading size="32"/>
+    <IconLoading :size="32" />
   </div>
   <div v-else class="place-self-start w-full">
     <div class="rounded-full flex justify-center mb-3">
       <button v-if="storeAuth.isPlayer" class="border border-collapse rounded-l-full w-52 text-sm p-2 hover:bg-indigo-100" :class="{ 'bg-indigo-100 text-indigo-950 border-indigo-200': toggle }" @click="toggle = 1">Personal Scoreboard</button>
-      <button class="border border-collapse  text-sm w-52 p-2" :class="{ 'bg-indigo-100 text-indigo-950 border-indigo-200': !toggle, ' text-indigo-950 border-indigo-200 rounded-r-full hover:bg-indigo-100'  : storeAuth.isPlayer, 'border-indigo-200 rounded-full bg-indigo-100': !storeAuth.isPlayer }" @click="toggle = 0">Global Scoreboard</button>
+      <button class="border border-collapse text-sm w-52 p-2" :class="{ 'bg-indigo-100 text-indigo-950 border-indigo-200': !toggle, ' text-indigo-950 border-indigo-200 rounded-r-full hover:bg-indigo-100': storeAuth.isPlayer, 'border-indigo-200 rounded-full bg-indigo-100': !storeAuth.isPlayer }" @click="toggle = 0">Global Scoreboard</button>
     </div>
     <hr class="my-5" />
 
@@ -105,8 +105,8 @@
                   <TableHead class="w-1/2 text-right">User</TableHead>
                   <TableCell class="w-1/2 text-left">
                     <div class="flex items-center gap-2">
-                      <img :src="storeAuth.getPhotoURL(board.user.photoFileName)" class="w-10 h-10 rounded-full" />
-                      <span class="font-semibold">{{ board.user.nickname }}</span>
+                      <img :src="getPhotoURL(board.photo_filename)" class="w-10 h-10 rounded-full" />
+                      <span class="font-semibold">{{ board.nickname }}</span>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -139,8 +139,8 @@
                   <TableHead class="w-1/2 text-right">User</TableHead>
                   <TableCell class="w-1/2 text-left">
                     <div class="flex items-center gap-2">
-                      <img :src="storeAuth.getPhotoURL(board.user.photoFileName)" class="w-10 h-10 rounded-full" />
-                      <span class="font-semibold">{{ board.user.nickname }}</span>
+                      <img :src="getPhotoURL(board.photo_filename)" class="w-10 h-10 rounded-full" />
+                      <span class="font-semibold">{{ board.nickname }}</span>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -170,17 +170,17 @@
               <TableBody>
                 <TableRow class="flex justify-center bg-green-50" v-for="player in globalScoreboard.multiplayer_top_players" :key="player">
                   <TableCell>
-                    <img :src="storeAuth.getPhotoURL(player.user.photoFileName)" class="w-10 h-10 rounded-full" />
+                    <img :src="getPhotoURL(player.photo_filename)" class="w-10 h-10 rounded-full" />
                   </TableCell>
                   <TableCell>
                     <div class="flex items-center gap-2">
-                      <span class="font-semibold">{{ player.user.name }}</span>
+                      <span class="font-semibold">{{ player.name }}</span>
                     </div>
-                    {{ player.user.nickname }}
+                    {{ player.nickname }}
                   </TableCell>
-                  <TableCell class="ml-auto items-center flex"
-                    >Victories: <b>{{ player.total_victories }}</b></TableCell
-                  >
+                  <TableCell class="ml-auto items-center flex">
+                    Victories: <b>{{ player.total_victories }}</b>
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -198,6 +198,7 @@ import axios from 'axios'
 import { computed, onMounted, ref } from 'vue'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import IconLoading from '../icons/IconLoading.vue'
+import avatarNoneAssetURL from '@/assets/avatar-none.png'
 
 const storeError = useErrorStore()
 const storeAuth = useAuthStore()
@@ -206,6 +207,21 @@ const toggle = ref(1)
 const personalScoreboard = ref({})
 const globalScoreboard = ref({})
 const isLoading = ref(false)
+
+const getPhotoURL = (photoFileName) => {
+    if (photoFileName) {
+      photoFileName = `/storage/photos/${photoFileName}`
+      if (import.meta.env.DEV) {
+        return axios.defaults.baseURL.replaceAll('/api', photoFileName)
+      }
+      let occurrence = 0
+      return axios.defaults.baseURL.replace(/\/api/g, (match) => {
+        occurrence++
+        return occurrence === 2 ? photoFileName : match
+      })
+    }
+    return avatarNoneAssetURL
+  }
 
 const fetchPersonalHighscore = async () => {
   storeError.resetMessages()
