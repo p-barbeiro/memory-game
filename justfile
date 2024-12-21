@@ -1,7 +1,7 @@
 GROUP := "dad-group-37"
-LARAVEL_VERSION := "2.3.1"
-VUE_VERSION := "2.3.1"
-WS_VERSION := "2.1.5"
+LARAVEL_VERSION := "2.4.1"
+VUE_VERSION := "2.4.1"
+WS_VERSION := "2.4.1"
 
 # LARAVEL
 laravel-build group=GROUP version=LARAVEL_VERSION:

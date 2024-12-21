@@ -1,5 +1,5 @@
 <template>
-  <MobileMenuItem v-for="menu in menus" :name="menu.name" :link="menu.link" :dropdownList="menu.dropdownList" />
+  <MobileMenuItem v-for="menu in menus" v-show="menu.visible" :name="menu.name" :link="menu.link" :dropdownList="menu.dropdownList" />
 </template>
 
 <script setup>

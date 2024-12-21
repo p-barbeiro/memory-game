@@ -90,7 +90,7 @@
         <div class="flex flex-col md:flex-row w-full gap-3">
           <!-- Multiplayer Total Pairs Discovered -->
           <div v-if="multiPlayerStats" class="border rounded-xl p-2 shadow md:w-1/2">
-            <h2 class="text-lg font-semibold text-center">Pairs Discovered</h2>
+            <h2 class="text-lg font-semibold text-center">Wins / Loses</h2>
             <hr class="my-2" />
             <div>
               <Bar :data="multiPlayerStats" />
@@ -166,20 +166,20 @@
                   <span class="ml-auto">{{ transactionsOverview.bonusTransactions }}</span>
                 </TableRow>
                 <TableRow class="flex p-1">
-                  Bonus BrainCoins:
+                  Bonus Brain Coins:
                   <span class="ml-auto">{{ transactionsOverview.bonusBrainCoins }}</span>
                 </TableRow>
                 <TableRow class="flex p-1">
-                  Bonus Average BrainCoins:
-                  <span class="ml-auto">{{ transactionsOverview.bonusAverageBrainCoins }}</span>
+                  Bonus Average Brain Coins:
+                  <span class="ml-auto">{{ parseFloat(transactionsOverview.bonusAverageBrainCoins).toFixed(2) }}</span>
                 </TableRow>
                 <TableRow class="flex p-1">
                   In-App Transactions:
                   <span class="ml-auto">{{ transactionsOverview.inappTransactions }}</span>
                 </TableRow>
                 <TableRow class="flex p-1">
-                  In-App BrainCoins:
-                  <span class="ml-auto">{{ transactionsOverview.inappBrainCoins }}</span>
+                  In-App Spent Brain Coins:
+                  <span class="ml-auto">{{ -transactionsOverview.inappBrainCoins }}</span>
                 </TableRow>
                 <TableRow class="flex p-1">
                   Purchase Transactions:
@@ -191,10 +191,10 @@
                 </TableRow>
                 <TableRow class="flex p-1">
                   Purchase Average Spent:
-                  <span class="ml-auto">{{ transactionsOverview.purchaseAverageSpent }} €</span>
+                  <span class="ml-auto">{{ parseFloat(transactionsOverview.purchaseAverageSpent).toFixed(2) }} €</span>
                 </TableRow>
                 <TableRow class="flex p-1">
-                  Purchase Total BrainCoins:
+                  Purchase Total Brain Coins:
                   <span class="ml-auto">{{ transactionsOverview.purchaseTotalBrainCoins }}</span>
                 </TableRow>
               </TableBody>

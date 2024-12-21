@@ -187,6 +187,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const custom = computed(() => {
+    if (!user.value) {
+      return {};
+    }
     const customValue = user.value.custom;
   
     // If it's already an object, return it directly
