@@ -81,6 +81,21 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
+    public function updateItems(Request $request, User $user)
+    {
+        try {
+            $user->fill($request->all());
+            $user->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to update user',
+                'message' => $e->getMessage()
+            ], 422);
+        }
+
+        return new UserResource($user);
+    }
+
     public function updatePhoto(UserUpdateRequest $request, User $user)
     {
         try {
@@ -112,7 +127,7 @@ class UserController extends Controller
             $newUser->blocked = false;
             $newUser->type = $request->validated('type') ?? 'P';
             $newUser->nickname = $request->validated('nickname');
-            $newUser->brain_coins_balance = $newUser->type == 'P' ? 10 : 0;
+            $newUser->brain_coins_balance = 0;
             $newUser->remember_token = Str::random(10);
 
             $lastUserId = User::latest()->first()->id;

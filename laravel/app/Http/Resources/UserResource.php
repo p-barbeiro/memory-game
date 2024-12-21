@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'photoFileName' => $this->photo_filename ? '/storage/photos/' . $this->photo_filename : null,
             'type' => match ($this->type) {'A' => "Administrator",'P' => "Player",default => "unknown"},
             'blocked' => $this->blocked,
+            'custom' => $this->custom
         ];
     }
 }

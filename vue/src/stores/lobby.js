@@ -110,8 +110,9 @@ export const useLobbyStore = defineStore('lobby', () => {
         newGameOnDB[`player${player}`] = gameWS[`player${player}`]
         newGameOnDB[`player${player}_pairs`] = 0
         newGameOnDB[`player${player}_mp_id`] = newGameMP.id
+        newGameOnDB[`player${player}_turns`] = 0
         newGameOnDB[`player${player}SocketId`] = response[`player${player}SocketId`]
-      }
+      }1
 
       // fill deck
       const total_pairs = (gameAPI.board.rows * gameAPI.board.columns) / 2
@@ -120,7 +121,7 @@ export const useLobbyStore = defineStore('lobby', () => {
         cards.push({ id: i, flipped: false, matched: false })
         cards.push({ id: i, flipped: false, matched: false })
       }
-      //cards = cards.sort(() => Math.random() - 0.5)
+      cards = cards.sort(() => Math.random() - 0.5)
       cards.forEach((card, index) => {
         card.uniqueID = index
       })

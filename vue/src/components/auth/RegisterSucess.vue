@@ -1,12 +1,8 @@
 <script setup>
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/stores/auth'
 import { useErrorStore } from '@/stores/error'
 import { useRouter } from 'vue-router'
-import IconPhoto from '../icons/IconPhoto.vue'
 
 const router = useRouter()
 const storeError = useErrorStore()

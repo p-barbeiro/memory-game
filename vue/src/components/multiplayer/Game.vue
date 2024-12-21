@@ -67,7 +67,7 @@
           </span>
         </div>
       </Card>
-      <div v-show="currentUserTurn && !quitIsOpen" class="mt-5"><span class="ml-5 font-semibold text-indigo-950 text-lg animate-[pulse_1s_ease-in-out_infinite]">It's your turn</span></div>
+      <div v-show="currentUserTurn && !quitIsOpen" class="mt-5"><span class="ml-5 font-semibold text-indigo-950 text-lg animate-[pulse_1s_ease-in-out_infinite]">It's your turn! Time Remaining:   {{ timeLeft }} s</span></div>
 
       <GameChest :class="{ 'blur-sm select-none': !currentUserTurn, 'blur-xl': quitIsOpen }" :board="board" :cards="cards" @card-click="handleFlip" />
 
@@ -80,7 +80,7 @@
 
       <div v-show="quitIsOpen" class="absolute flex flex-col justify-center items-center gap-2 mt-2">
         <div class="flex flex-col justify-center items-center gap-2 border p-5 bg-slate-50 rounded-lg">
-          <span class="text-base text-center">Are you sure you want to quit? <br><b>There is no turning back!</b></span>
+          <span class="text-base text-center">Are you sure you want to quit? <br /><b>There is no turning back!</b></span>
           <div class="flex flex-row gap-3">
             <Button @click="quitIsOpen = false" variant="outline">Cancel</Button>
             <Button @click="storeMultiplayer.quit(props.game)">Yes, I want to quit</Button>
@@ -127,21 +127,39 @@ const board = computed(() => {
   return props.game.board
 })
 
+const activeDeck = computed(() => auth.custom?.active_deck ?? 'Animals')
+
 //fill cards with images
 const cards = computed(() => {
   return props.game.cards.map((card) => {
     return {
       ...card,
-      image: `/decks/deck4/${card.id}.svg`
+      image: `/decks/${activeDeck.value}/${card.id}.svg`
     }
   })
 })
 
 //game
+const timeLeft = ref(20) // Start with 20 seconds
+let timer = null
+
 const flippedCards = ref([])
 const handleFlip = (card) => {
   if (currentUserTurn.value) {
-    // If there are less than 2 flipped cards
+    if (flippedCards.value.length === 0) {
+      timer = setInterval(() => {
+        timeLeft.value--
+        if (timeLeft.value === 0) {
+          clearInterval(timer)
+          storeMultiplayer.quit(props.game)
+          toast({
+            title: `Time's up! You lost.`,
+            variant: 'destructive'
+          })
+        }
+      }, 1000)
+    }
+    
     if (flippedCards.value.length < 2) {
       card.flipped = true
       storeMultiplayer.updateCard(props.game, card)
@@ -149,6 +167,9 @@ const handleFlip = (card) => {
 
       // If there are 2 flipped cards
       if (flippedCards.value.length === 2) {
+        clearInterval(timer)
+        timeLeft.value = 20
+
         setTimeout(() => {
           if (checkMatch()) {
             for (let i = 0; i < flippedCards.value.length; i++) {

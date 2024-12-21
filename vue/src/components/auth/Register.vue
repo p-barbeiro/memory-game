@@ -8,11 +8,12 @@ import { useErrorStore } from '@/stores/error'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import IconPhoto from '../icons/IconPhoto.vue'
+import { useTransactionStore } from '@/stores/transaction'
 
 const router = useRouter()
 const storeAuth = useAuthStore()
 const storeError = useErrorStore()
-
+const storeTransaction = useTransactionStore()
 const credentials = ref({
   name: '',
   email: '',
@@ -34,6 +35,11 @@ const register = async () => {
         email: credentials.value.email,
         password: credentials.value.password
       })
+      storeTransaction.createTransaction({
+            type: 'B',
+            brain_coins: 10,
+            description: `Welcome bonus! +10 Brain Coins`,
+        })
       router.push({ name: 'register-success' })
     }
   } catch (error) {

@@ -89,11 +89,11 @@ const board = computed(() => {
 //cards
 const cards = ref([])
 const images = []
-const deck = 'deck4'
+const activeDeck = computed(() => auth.custom?.active_deck ?? 'Animals')
 
 const fillDeck = () => {
   for (let i = 1; i <= totalPairs.value; i++) {
-    images.push(`/decks/${deck}/${i}.svg`)
+    images.push(`/decks/${activeDeck.value}/${i}.svg`)
   }
 }
 const generateCards = () => {

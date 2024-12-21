@@ -9,7 +9,7 @@
           <RouterLink :to="{ name: 'home' }">
             <div class="mr-10 flex items-center">
               <img class="h-10 w-10 object-cover" :src="MemoryGameLogo" alt="logo" />
-              <h3 class="text-base text-gray-800 font-bold tracking-normal leading-tight ml-3 lg:block">Memory Game</h3>
+              <h3 class="text-base text-nowrap text-gray-800 font-bold tracking-normal leading-tight ml-3 lg:block">Memory Game</h3>
             </div>
           </RouterLink>
 

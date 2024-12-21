@@ -34,6 +34,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // User Routes
     Route::get('/users/{user}', [UserController::class, 'show'])->can('view', 'user');
     Route::patch('/users/{user}', [UserController::class, 'update'])->can('update', 'user');
+    Route::patch('/users/{user}/items', [UserController::class, 'updateItems'])->can('update', 'user');
     Route::post('/users/{user}/photo', [UserController::class, 'updatePhoto'])->can('update', 'user');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->can('delete', 'user');
 

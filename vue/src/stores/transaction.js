@@ -109,7 +109,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         return transaction
       }
     } catch (e) {
-      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error creating game!')
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error creating Transaction!')
       return false
     }
   }

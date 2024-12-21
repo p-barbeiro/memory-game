@@ -181,7 +181,7 @@
               </TableCell>
             </TableRow>
             <TableRow v-if="!storeGame.games?.length">
-              <TableCell colspan="9" class="text-center h-24">No users found</TableCell>
+              <TableCell colspan="11" class="text-center h-24">No Games found</TableCell>
             </TableRow>
           </TableBody>
         </Table>

@@ -24,7 +24,9 @@ exports.createGameEngine = () => {
         game.gameStatus = 2; // player 2 wins
       }
       if (game.player1_pairs === game.player2_pairs) {
-        game.gameStatus = 3; // draw
+        game.player1_turns > game.player2_turns
+          ? (game.gameStatus = 2)
+          : (game.gameStatus = 1);
       }
     }
   };
@@ -58,6 +60,7 @@ exports.createGameEngine = () => {
       };
     }
     game.cards[card.uniqueID] = card;
+    game.currentPlayer === 1 ? game.player1_turns++ : game.player2_turns++;
     if (card.matched) {
       game.pairsFound++;
       if (game.currentPlayer === 1) {

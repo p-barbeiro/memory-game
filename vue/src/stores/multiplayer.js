@@ -111,7 +111,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
     console.log('Winner: ', winner)
 
     if (playerNumberOfCurrentUser(game) === 1) {
-      const APIresponse = await gameStore.updateGame(game.id, { status: 'E', winner_user_id: winner, total_turns_winner: game.gameStatus === 1 ? game.player1_pairs : game.gameStatus === 1 ? game.player2_pairs : null, mp_finished: 1})
+      const APIresponse = await gameStore.updateGame(game.id, { status: 'E', winner_user_id: winner, total_turns_winner: game.gameStatus === 1 ? game.player1_turns : game.gameStatus === 2 ? game.player2_turns : null, mp_finished: 1})
       const updatedGameOnDB = APIresponse
       console.log('Game has ended and updated on the database: ', updatedGameOnDB)
     }

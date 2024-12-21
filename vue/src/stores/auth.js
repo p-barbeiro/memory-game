@@ -6,12 +6,13 @@ import { useRouter } from 'vue-router'
 
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
 import { toast } from '@/components/ui/toast'
+import { useTransactionStore } from './transaction'
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
   const storeError = useErrorStore()
   const socket = inject('socket')
-
+  const storeTransaction = useTransactionStore()
   const user = ref(null)
   const token = ref('')
   let intervalToRefreshToken = null
@@ -185,6 +186,29 @@ export const useAuthStore = defineStore('auth', () => {
     return false
   }
 
+  const custom = computed(() => {
+    const customValue = user.value.custom;
+  
+    // If it's already an object, return it directly
+    if (typeof customValue === "object" && customValue !== null) {
+      return customValue;
+    }
+  
+    // If it's a string, try to parse it
+    if (typeof customValue === "string") {
+      try {
+        return JSON.parse(customValue);
+      } catch (error) {
+        console.error("Invalid JSON in user.custom:", error);
+        return {}; // Return an empty object as a fallback
+      }
+    }
+  
+    // If it's neither a string nor an object, return an empty object
+    return {};
+  });
+  
+
   const register = async (credentials, type = undefined) => {
     storeError.resetMessages()
     try {
@@ -197,7 +221,9 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.status !== 201) {
         throw response
       }
-      if (!type) router.push({ name: 'registerSuccess' })
+      if (!type) {
+        router.push({ name: 'registerSuccess' })
+      }
       return true
     } catch (e) {
       storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Registration Failed!')
@@ -221,6 +247,25 @@ export const useAuthStore = defineStore('auth', () => {
         description: 'Your profile has been updated successfully!',
         variant: 'info'
       })
+      return true
+    } catch (e) {
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Profile Update Failed!')
+      return false
+    }
+  }
+
+  const updateUserItems = async (items) => {
+    storeError.resetMessages()
+    try {
+      axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+      axios.defaults.headers.common['Content-Type'] = 'application/json'
+
+      const response = await axios.patch(`users/${user.value.id}/items`, items)
+
+      if (response.status !== 200) {
+        throw response
+      }
+      user.value = response.data.data
       return true
     } catch (e) {
       storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Profile Update Failed!')
@@ -288,6 +333,7 @@ export const useAuthStore = defineStore('auth', () => {
     userNickname,
     userID,
     isAdmin,
+    custom,
     login,
     logout,
     restoreToken,
@@ -295,6 +341,7 @@ export const useAuthStore = defineStore('auth', () => {
     updateProfile,
     updatePhoto,
     getPhotoURL,
-    removeAccount
+    removeAccount,
+    updateUserItems
   }
 })
